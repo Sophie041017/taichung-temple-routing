@@ -137,7 +137,7 @@ temple_coords = {
 }
 
 m = folium.Map(location=[24.22, 120.65], zoom_start=11, tiles="OpenStreetMap")
-folium.Marker([temple_coords[0][1], temple_coords[0][2]], tooltip="總部", icon=folium.Icon(color="red", icon="home")).add_to(m)
+folium.Marker([temple_coords[0][1], temple_coords[0][2]], tooltip="南屯萬和宮", icon=folium.Icon(color="red", icon="home")).add_to(m)
 
 def draw_route(route, color, car_name):
     if not route or len(route) < 2: return
