@@ -9,7 +9,7 @@ import os
 import datetime
 import subprocess
 
-# 0. 頁面基本設定
+# 頁面基本設定
 st.set_page_config(page_title="候選人拜票路線問題", layout="wide", page_icon="⛩️")
 
 # 1. 載入資料與計算數據
