@@ -4,17 +4,15 @@ import pandas as pd
 import random
 import time
 
-# ==========================================
+
 # 1. 讀取距離矩陣
-# ==========================================
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
 temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
 
-# ==========================================
-# 2. 定義狀態解碼與成本函數 (無平衡限制版：最佳切斷點法)
-# ==========================================
+
+# 2. 定義狀態解碼與成本函數
 def calc_total_dist(state):
     best_split_cost = float('inf')
     best_dist1 = 0
@@ -40,9 +38,8 @@ def calc_total_dist(state):
     # 回傳：(總距離, 車一距離, 車二距離, 車一路線, 車二路線)
     return best_split_cost, best_dist1, best_dist2, best_route1, best_route2
 
-# ==========================================
+
 # 3. GA 核心參數設定
-# ==========================================
 POP_SIZE = 100
 GENERATIONS = 500
 MUTATION_RATE = 0.1
@@ -77,17 +74,16 @@ def mutate(individual):
         individual[idx1], individual[idx2] = individual[idx2], individual[idx1]
     return individual
 
-print("🧬 啟動基因演算法 (Genetic Algorithm, GA) [極速快取版]...")
+
 start_time = time.time()
 
-# ==========================================
+
 # 4. GA 演算法主迴圈
-# ==========================================
 population = init_population()
 best_overall_info = None
 best_dist = float('inf')
 
-# ★ 準備記錄歷史軌跡 ★
+
 history_log = []
 
 eval_population = [(calc_total_dist(ind), ind) for ind in population]
@@ -100,7 +96,7 @@ def selection_fast(eval_pop):
 for gen in range(GENERATIONS):
     new_population = []
     
-    # 🌟 菁英保留機制 (尋找當代最強)
+    # 尋找當代最強
     current_best_info, current_best_ind = min(eval_population, key=lambda x: x[0][0])
     new_population.append(current_best_ind[:])
     
@@ -122,7 +118,6 @@ for gen in range(GENERATIONS):
         best_dist = current_best_info[0]
         best_overall_info = current_best_info
         
-        # ★ 動態記錄：族群中誕生了新的超級菁英，記錄下它的基因表現！ ★
         _, _, _, h_route1, h_route2 = best_overall_info
         history_log.append({
             "iteration": gen + 1,  # 記錄這是在第幾代演化出來的
@@ -131,34 +126,32 @@ for gen in range(GENERATIONS):
             "route2": h_route2[:]
         })
 
-# ==========================================
+
 # 5. 輸出最終結果
-# ==========================================
 _, best_dist_1, best_dist_2, best_route_1, best_route_2 = best_overall_info
 solve_time = time.time() - start_time
 
 print("\n" + "="*50)
-print("🏆 基因演算法 (GA) 最佳化結果 [無平衡限制版]")
+print("基因演算法 (GA) 最佳化結果")
 print("="*50)
 print(f"總耗時: {solve_time:.6f} 秒 (繁衍 {GENERATIONS} 代)")
 print(f"最佳總距離: {best_dist:.2f} 公里")
 
-print("\n📍 【GA 優化 - 車隊一 路線】")
+print("\n【GA 優化 - 車隊一 路線】")
 for idx in best_route_1:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
 print(f"(此車行駛距離: {best_dist_1:.2f} 公里 | 負責 {len(best_route_1)-2} 間宮廟)")
 
-print("\n📍 【GA 優化 - 車隊二 路線】")
+print("\n【GA 優化 - 車隊二 路線】")
 for idx in best_route_2:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
 print(f"(此車行駛距離: {best_dist_2:.2f} 公里 | 負責 {len(best_route_2)-2} 間宮廟)")
 
 
-# ==========================================
-# ★ 自動化管線：將運算結果儲存至 JSON ★
-# ==========================================
+
+# 將運算結果儲存至 JSON
 import json
 import os
 
@@ -172,7 +165,7 @@ algo_result = {
         "car2_count": len(best_route_2) - 2 if len(best_route_2) > 2 else 0, 
         "route1": best_route_1,
         "route2": best_route_2 if len(best_route_2) > 2 else [],
-        "history": history_log  # ★ 將演化過程交接給 JSON！
+        "history": history_log 
     }
 }
 
@@ -191,4 +184,4 @@ all_results.update(algo_result)
 with open(json_file, "w", encoding="utf-8") as f:
     json.dump(all_results, f, ensure_ascii=False, indent=4)
 
-print(f"\n💾 系統提示：【{algo_name}】的運算結果已成功寫入 {json_file}！")
+print(f"\n【{algo_name}】的運算結果已成功寫入 {json_file}")
