@@ -85,6 +85,7 @@ with st.sidebar:
     selected_option = st.selectbox("在地圖上檢視演算法路線：", dropdown_options)
     selected_algo = selected_option.split(" ")[0]
     
+
     # 後端重新運算
     if st.button(f"重新運算 {selected_algo}", use_container_width=True):
         file_map = {
@@ -100,21 +101,24 @@ with st.sidebar:
             "TS": "0601_tabu.py"
         }
         
-if selected_algo in file_map:
+        if selected_algo in file_map:
             target_file = file_map[selected_algo]
-            with st.spinner("系統後台運算中..."):
+            with st.spinner("系統後台運算中"):
+                my_env = os.environ.copy() 
+                
                 result = subprocess.run(
                     [sys.executable, "-u", target_file], 
                     capture_output=True, 
-                    text=True
+                    text=True,
+                    env=my_env 
                 )
             
             if result.returncode == 0:
                 st.rerun()
             else:
-                st.error(f"❌ 演算法執行失敗！請檢查背景錯誤：\n\n{result.stderr}")
+                st.error(f"演算法執行失敗，請檢查背景錯誤：\n\n{result.stderr}")
         else:
-            st.error("系統找不到對應的演算法檔案！")
+            st.error("系統找不到對應的演算法檔案")
     
             
     st.markdown("---")
