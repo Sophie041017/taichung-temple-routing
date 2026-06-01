@@ -33,5 +33,3 @@ for script in scripts_to_run:
         sys.exit(1)
 
 total_time = time.time() - total_start_time
-print("\n" + "="*50)
-print("VRP_Live_Dashboard.html 已生成")
