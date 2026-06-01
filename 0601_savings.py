@@ -3,20 +3,17 @@ sys.stdout.reconfigure(encoding='utf-8')
 import pandas as pd
 import time
 
-# ==========================================
 # 1. 讀取距離矩陣
-# ==========================================
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
 temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
 
-print("🦅 啟動節約演算法 (Clarke-Wright Savings) [無平衡限制版]...")
+
 start_time = time.time()
 
-# ==========================================
+
 # 2. 初始化：每間宮廟都先各自成一條路線 (總部 -> 宮廟 -> 總部)
-# ==========================================
 # routes 裡面存放 17 條獨立路線 (不包含起終點 0，方便後續串接)
 routes = [[i] for i in range(1, n)]
 
@@ -30,13 +27,13 @@ def calc_current_total(current_routes):
         total += calc_dist([0] + r + [0])
     return total
 
-# ★ 準備記錄歷史軌跡 (Step 0: 最原始放射狀的狀態) ★
+# Step 0: 最原始放射狀的狀態
 history_log = []
 step_count = 0
 
 def log_history(current_routes, step):
-    # 因為我們要塞兩台車給 JSON，但現在路線可能有 17 條
-    # 視覺化策略：把最長的那條當車隊一，其他碎路線全部「暫時接在一起」當車隊二
+    # 要塞兩台車給 JSON，但現在路線可能有 17 條
+    # 策略：把最長的那條當車隊一，其他碎路線全部暫時接在一起當車隊二
     sorted_r = sorted(current_routes, key=len, reverse=True)
     r1 = [0] + sorted_r[0] + [0] if len(sorted_r) > 0 else []
     
@@ -57,9 +54,8 @@ def log_history(current_routes, step):
 # 記錄第 0 步
 log_history(routes, step_count)
 
-# ==========================================
-# 3. 計算所有節點對的「節約值 (Savings)」
-# ==========================================
+
+# 3. 計算所有節點對的節約值 (Savings)
 savings = []
 for i in range(1, n):
     for j in range(i + 1, n):
@@ -68,9 +64,8 @@ for i in range(1, n):
 
 savings.sort(key=lambda x: x[0], reverse=True)
 
-# ==========================================
-# 4. 節約合併主迴圈 (★ 拔除工作量平衡限制 ★)
-# ==========================================
+
+# 4. 節約合併主迴圈
 for s, i, j in savings:
     if len(routes) == 2:
         break 
@@ -91,7 +86,7 @@ for s, i, j in savings:
             routes.remove(route_j)
             routes.append(new_route)
             
-            # ★ 動態記錄：每次成功串接積木，就把畫面存下來 ★
+
             step_count += 1
             log_history(routes, step_count)
 
@@ -104,9 +99,8 @@ while len(routes) > 2:
 
 final_routes = [[0] + r + [0] for r in routes]
 
-# ==========================================
-# 5. 加上 2-Opt 局部優化 (幫節約法擦屁股)
-# ==========================================
+
+# 5. 加上 2-Opt 局部優化
 def two_opt(route):
     best_route = route[:]
     best_dist = calc_dist(best_route)
@@ -132,7 +126,7 @@ opt_dist_2 = calc_dist(opt_route_2)
 opt_total = opt_dist_1 + opt_dist_2
 solve_time = time.time() - start_time
 
-# ★ 記錄最後 2-Opt 拋光完的極致路線 ★
+
 history_log.append({
     "iteration": "Final 2-Opt", 
     "cost": round(opt_total, 2),
@@ -141,31 +135,29 @@ history_log.append({
 })
 
 
-# ==========================================
+
 # 6. 輸出最終結果
-# ==========================================
 print("\n" + "="*50)
-print("🏆 節約演算法 (Savings) + 2-Opt 最佳化結果 [無平衡限制版]")
+print("節約演算法 (Savings) + 2-Opt 最佳化結果")
 print("="*50)
 print(f"總耗時: {solve_time:.6f} 秒")
 print(f"最佳總距離: {opt_total:.2f} 公里")
 
-print("\n📍 【節約演算法 - 車隊一 路線】")
+print("\n【節約演算法 - 車隊一 路線】")
 for idx in opt_route_1:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
 print(f"(此車行駛距離: {opt_dist_1:.2f} 公里 | 負責 {len(opt_route_1)-2} 間宮廟)")
 
-print("\n📍 【節約演算法 - 車隊二 路線】")
+print("\n【節約演算法 - 車隊二 路線】")
 for idx in opt_route_2:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
 print(f"(此車行駛距離: {opt_dist_2:.2f} 公里 | 負責 {len(opt_route_2)-2} 間宮廟)")
 
 
-# ==========================================
-# ★ 自動化管線：將運算結果儲存至 JSON ★
-# ==========================================
+
+# 將運算結果儲存至 JSON 
 import json
 import os
 
@@ -179,7 +171,7 @@ algo_result = {
         "car2_count": len(opt_route_2) - 2 if len(opt_route_2) > 2 else 0,
         "route1": opt_route_1,
         "route2": opt_route_2 if len(opt_route_2) > 2 else [],
-        "history": history_log  # ★ 將節約合併過程交接給 JSON！
+        "history": history_log 
     }
 }
 
@@ -198,4 +190,4 @@ all_results.update(algo_result)
 with open(json_file, "w", encoding="utf-8") as f:
     json.dump(all_results, f, ensure_ascii=False, indent=4)
 
-print(f"\n💾 系統提示：【{algo_name}】的運算結果已成功寫入 {json_file}！")
+print(f"\n【{algo_name}】的運算結果已成功寫入 {json_file}")
