@@ -103,7 +103,7 @@ with st.sidebar:
         
         if selected_algo in file_map:
             target_file = file_map[selected_algo]
-            with st.spinner("系統後台運算中"):
+            with st.spinner("運算中"):
                 my_env = os.environ.copy() 
                 
                 result = subprocess.run(
