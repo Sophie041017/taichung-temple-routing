@@ -5,18 +5,15 @@ import random
 import math
 import time
 
-# ==========================================
 # 1. 讀取距離矩陣
-# ==========================================
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
 temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
 
-print("🤖 啟動適應性大鄰域搜尋法 (ALNS)...")
 start_time = time.time()
 
-# ★ 終極開關：若要「強制平衡」，請改為 9；若要「無限制放飛」，請改為 n (18) ★
+
 MAX_CAPACITY = n 
 
 def calc_dist(route):
@@ -25,9 +22,8 @@ def calc_dist(route):
 def evaluate(routes):
     return calc_dist([0]+routes[0]+[0]) + calc_dist([0]+routes[1]+[0])
 
-# ==========================================
-# 2. 定義「破壞算子 (Destroy Operators)」
-# ==========================================
+
+# 2. 定義破壞算子 (Destroy Operators)
 def destroy_random(routes, q):
     new_routes = [r[:] for r in routes]
     removed = []
@@ -55,9 +51,8 @@ def destroy_worst(routes, q):
         removed.append(new_routes[r_idx].pop(idx))
     return new_routes, removed
 
-# ==========================================
-# 3. 定義「修復算子 (Repair Operator)」
-# ==========================================
+
+# 3. 定義修復算子 (Repair Operator)
 def repair_greedy(routes, removed):
     new_routes = [r[:] for r in routes]
     random.shuffle(removed) 
@@ -79,16 +74,14 @@ def repair_greedy(routes, removed):
         new_routes[best_car].insert(best_idx, node)
     return new_routes
 
-# ==========================================
 # 4. ALNS 主迴圈 (適應性權重與退火機制)
-# ==========================================
 # 初始解 (隨機切一半)
 current_routes = [list(range(1, 10)), list(range(10, n))]
 current_cost = evaluate(current_routes)
 best_routes = [r[:] for r in current_routes]
 best_cost = current_cost
 
-# ★ 準備記錄歷史軌跡 (Step 0: 初始瞎猜的狀態) ★
+# Step 0: 初始瞎猜狀態
 history_log = []
 history_log.append({
     "iteration": 0,
@@ -123,14 +116,12 @@ for it in range(ITERATIONS):
     
     reward = 0
     if new_cost < best_cost:
-        # ★ 找到破紀錄的好解！除了給予大獎勵，還要記錄到動態軌跡中 ★
         best_cost = new_cost
         best_routes = [r[:] for r in new_routes]
         current_routes = [r[:] for r in new_routes]
         current_cost = new_cost
         reward = 3
-        
-        # 將這次的突破記錄下來
+     
         history_log.append({
             "iteration": it + 1,
             "cost": round(best_cost, 2),
@@ -159,9 +150,8 @@ for it in range(ITERATIONS):
         
     T *= ALPHA # 降溫
 
-# ==========================================
-# 5. 加上 2-Opt 局部優化進行完美收尾
-# ==========================================
+
+# 5. 加上 2-Opt 局部優化
 def two_opt_single(route):
     best_route = route[:]
     best_dist = calc_dist(best_route)
@@ -190,7 +180,7 @@ dist_2 = calc_dist(final_route_2)
 final_total = dist_1 + dist_2
 solve_time = time.time() - start_time
 
-# ★ 記錄最後 2-Opt 拋光完的極致路線 ★
+# 記錄最後 2-Opt 拋光完的路線
 history_log.append({
     "iteration": "Final 2-Opt", 
     "cost": round(final_total, 2),
@@ -198,32 +188,30 @@ history_log.append({
     "route2": final_route_2[:]
 })
 
-# ==========================================
+
 # 6. 輸出最終結果
-# ==========================================
 print("\n" + "="*50)
-print("🏆 ALNS (適應性大鄰域搜尋法) 最佳化結果")
+print("ALNS (適應性大鄰域搜尋法) 最佳化結果")
 print("="*50)
 print(f"總耗時: {solve_time:.6f} 秒")
 print(f"最佳總距離: {final_total:.2f} 公里")
 
-print(f"\n🧠 AI 演算法偏好: [隨機破壞權重: {weights[0]:.2f}] vs [最差破壞權重: {weights[1]:.2f}]")
+print(f"\n AI 演算法偏好: [隨機破壞權重: {weights[0]:.2f}] vs [最差破壞權重: {weights[1]:.2f}]")
 
-print("\n📍 【ALNS 優化 - 車隊一 路線】")
+print("\n【ALNS 優化 - 車隊一 路線】")
 for idx in final_route_1:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
 print(f"(此車行駛距離: {dist_1:.2f} 公里 | 負責 {len(final_route_1)-2} 間宮廟)")
 
-print("\n📍 【ALNS 優化 - 車隊二 路線】")
+print("\n【ALNS 優化 - 車隊二 路線】")
 for idx in final_route_2:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
 print(f"(此車行駛距離: {dist_2:.2f} 公里 | 負責 {len(final_route_2)-2} 間宮廟)")
 
-# ==========================================
-# ★ 自動化管線：將運算結果儲存至 JSON ★
-# ==========================================
+
+# 將運算結果儲存至 JSON
 import json
 import os
 
@@ -237,7 +225,7 @@ algo_result = {
         "car2_count": len(final_route_2) - 2 if len(final_route_2) > 2 else 0,
         "route1": final_route_1,
         "route2": final_route_2 if len(final_route_2) > 2 else [],
-        "history": history_log  # ★ 成功把 ALNS 的突破過程交接給 JSON！
+        "history": history_log 
     }
 }
 
@@ -256,4 +244,4 @@ all_results.update(algo_result)
 with open(json_file, "w", encoding="utf-8") as f:
     json.dump(all_results, f, ensure_ascii=False, indent=4)
 
-print(f"\n💾 系統提示：【{algo_name}】的運算結果已成功寫入 {json_file}！")
+print(f"\n【{algo_name}】的運算結果已成功寫入 {json_file}")
