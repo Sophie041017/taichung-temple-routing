@@ -184,7 +184,7 @@ fig3 = go.Figure()
 fig3.add_trace(go.Bar(x=df['演算法'], y=df['車隊一 (間)'], name='車隊一', marker_color='#f39c12', text=df['車隊一 (間)'], textposition='auto'))
 fig3.add_trace(go.Bar(x=df['演算法'], y=df['車隊二 (間)'], name='車隊二', marker_color='#3498db', text=df['車隊二 (間)'], textposition='auto'))
 fig3.update_layout(barmode='stack', title='車隊工作分配', yaxis_title='負責宮廟數量')
-fig3.add_hline(y=8.5, line_dash="dash", line_color="#e74c3c", annotation_text="完美平均")
+fig3.add_hline(y=8.5, line_dash="dash", line_color="#e74c3c", annotation_text="平均線")
 
 st.plotly_chart(fig1, width="stretch")
 col_a, col_b = st.columns(2)
