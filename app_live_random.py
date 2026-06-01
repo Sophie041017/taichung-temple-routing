@@ -1,3 +1,4 @@
+import sys
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -99,13 +100,22 @@ with st.sidebar:
             "TS": "0601_tabu.py"
         }
         
-        if selected_algo in file_map:
+if selected_algo in file_map:
             target_file = file_map[selected_algo]
-            with st.spinner(""):
-                subprocess.run(["python", "-u", target_file])
-            st.rerun() # 算完後強制重新整理網頁
+            with st.spinner("系統後台運算中..."):
+                result = subprocess.run(
+                    [sys.executable, "-u", target_file], 
+                    capture_output=True, 
+                    text=True
+                )
+            
+            if result.returncode == 0:
+                st.rerun()
+            else:
+                st.error(f"❌ 演算法執行失敗！請檢查背景錯誤：\n\n{result.stderr}")
         else:
             st.error("系統找不到對應的演算法檔案！")
+    
             
     st.markdown("---")
     st.subheader("B. 數據分析")
