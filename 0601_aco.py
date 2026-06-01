@@ -4,17 +4,13 @@ import pandas as pd
 import random
 import time
 
-# ==========================================
 # 1. 讀取距離矩陣
-# ==========================================
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
 temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
 
-# ==========================================
 # 2. ACO 核心參數設定
-# ==========================================
 N_ANTS = 30          # 螞蟻數量 (每回合派 30 隻螞蟻出去找路)
 ITERATIONS = 100     # 迭代次數 (讓蟻群找 100 回合)
 ALPHA = 1.0          # 費洛蒙的重要性 (數值越高，螞蟻越盲從前人的路線)
@@ -25,9 +21,8 @@ Q = 100              # 費洛蒙釋放總量常數
 # 初始化費洛蒙矩陣 (一開始每條路徑的費洛蒙濃度都設為 0.1)
 pheromone = [[0.1 for _ in range(n)] for _ in range(n)]
 
-# ==========================================
+
 # 3. 螞蟻挑選下一站的邏輯 (輪盤法)
-# ==========================================
 def select_next_node(current, unvisited):
     probabilities = []
     
@@ -48,10 +43,8 @@ def select_next_node(current, unvisited):
             return node
     return probabilities[-1][0]
 
-# ==========================================
+
 # 4. ACO 演算法主迴圈
-# ==========================================
-print("🐜 啟動蟻群演算法 (Ant Colony Optimization, ACO)...")
 start_time = time.time()
 
 best_overall_cost = float('inf')
@@ -60,14 +53,14 @@ best_route_2 = None
 best_dist_1 = 0
 best_dist_2 = 0
 
-# ★ 準備記錄歷史軌跡 ★
+
 history_log = []
 
 for iteration in range(ITERATIONS):
     all_routes = []
     all_costs = []
     
-    # 步驟一：每隻螞蟻開始建構路線 (無平衡限制版)
+    # 步驟一：每隻螞蟻開始建構路線
     for ant in range(N_ANTS):
         unvisited = set(range(1, n))
         
@@ -110,7 +103,7 @@ for iteration in range(ITERATIONS):
             best_route_1, best_route_2 = route1[:], route2[:]
             best_dist_1, best_dist_2 = cost1, cost2
             
-            # ★ 動態記錄：只要有螞蟻找到更短的路線，就記錄到 history_log 中 ★
+            # 動態記錄：只要有螞蟻找到更短的路線，就記錄到 history_log 中
             history_log.append({
                 "iteration": iteration + 1,  # 記錄這是在第幾回合找到的
                 "cost": round(best_overall_cost, 2),
@@ -138,33 +131,31 @@ for iteration in range(ITERATIONS):
             pheromone[r2[j]][r2[j+1]] += deposit
             pheromone[r2[j+1]][r2[j]] += deposit
 
-# ==========================================
+
 # 5. 輸出最終結果
-# ==========================================
 solve_time = time.time() - start_time
 
 print("\n" + "="*50)
-print("🏆 蟻群演算法 (ACO) 最佳化結果 [無平衡限制版]")
+print("蟻群演算法 (ACO) 結果")
 print("="*50)
 print(f"總耗時: {solve_time:.6f} 秒 (螞蟻數: {N_ANTS}, 迭代: {ITERATIONS})")
 print(f"最佳總距離: {best_overall_cost:.2f} 公里")
 
-print("\n📍 【ACO 優化 - 車隊一 路線】")
+print("\n【ACO 優化 - 車隊一 路線】")
 for idx in best_route_1:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
 print(f"(此車行駛距離: {best_dist_1:.2f} 公里 | 負責 {len(best_route_1)-2} 間宮廟)")
 
-print("\n📍 【ACO 優化 - 車隊二 路線】")
+print("\n【ACO 優化 - 車隊二 路線】")
 for idx in best_route_2:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
 print(f"(此車行駛距離: {best_dist_2:.2f} 公里 | 負責 {len(best_route_2)-2} 間宮廟)")
 
 
-# ==========================================
-# ★ 自動化管線：將運算結果儲存至 JSON ★
-# ==========================================
+
+# 將運算結果儲存至 JSON 
 import json
 import os
 
@@ -178,7 +169,7 @@ algo_result = {
         "car2_count": len(best_route_2) - 2 if len(best_route_2) > 2 else 0,
         "route1": best_route_1,
         "route2": best_route_2 if len(best_route_2) > 2 else [],
-        "history": history_log  # ★ 將蟻群收斂過程交接給 JSON！
+        "history": history_log
     }
 }
 
@@ -197,4 +188,4 @@ all_results.update(algo_result)
 with open(json_file, "w", encoding="utf-8") as f:
     json.dump(all_results, f, ensure_ascii=False, indent=4)
 
-print(f"\n💾 系統提示：【{algo_name}】的運算結果已成功寫入 {json_file}！")
+print(f"\n【{algo_name}】的運算結果已成功寫入 {json_file}")
