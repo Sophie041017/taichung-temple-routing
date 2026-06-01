@@ -7,14 +7,14 @@ import datetime
 import json
 import os
 
-# 1. 讀取剛剛生成的距離矩陣
+# 1. 讀取生成的距離矩陣
 print("讀取距離矩陣中...")
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
 temples = df_dist.columns.tolist()
 n = len(temples)
 dist = df_dist.values
 
-# ★ 補上計時器起始點
+# 起始點
 start_time = time.time()
 
 # 2. 建立 mTSP 數學模型 (最小化總距離)
@@ -45,13 +45,12 @@ for i in range(1, n):
 print("開始求解數學模式 (MILP)...")
 prob.solve(pulp.PULP_CBC_CMD(msg=False))
 
-# ★ 計算求解耗時
+# 求解耗時
 solve_time = time.time() - start_time
 best_distance = pulp.value(prob.objective)
 
 # 7. 輸出結果
 print("-" * 30)
-print("求解狀態:", pulp.LpStatus[prob.status])
 print(f"最佳總距離: {best_distance:.2f} 公里")
 print(f"總耗時: {solve_time:.4f} 秒")
 
@@ -71,21 +70,18 @@ for j in range(1, n):
                 break
         routes.append(route)
 
-print("\n📍 【車隊一 最佳路線】")
+print("\n【車隊一 最佳路線】")
 for idx in routes[0]:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
 
-print("\n📍 【車隊二 最佳路線】")
+print("\n【車隊二 最佳路線】")
 for idx in routes[1]:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
 
 
-# ==========================================
-# ★ 新增：為了配合動態網頁，製作「視覺化回放」歷史紀錄 ★
-# MILP 雖然是一次算出最佳解，但我們可以把最佳解拆成一步步的軌跡供網頁播放
-# ==========================================
+# MILP 雖然是一次算出最佳解，但可以把最佳解拆成一步步的軌跡供網頁播放
 history_log = []
 current_r1 = [0]
 current_r2 = [0]
@@ -120,15 +116,13 @@ for step in range(1, max_steps):
         "route2": current_r2[:]
     })
 
-print("\n" + "="*40)
-print("🕒 拜票時程表計算 (時速 45km/h, 停留 30 分)")
-print("="*40)
+
 start_dt = datetime.datetime(2026, 1, 1, 9, 0, 0)
 speed_km_per_min = 45.0 / 60.0
 stay_time = datetime.timedelta(minutes=30)
 
 for r_idx, route in enumerate(routes):
-    print(f"\n🚗 【車隊 {r_idx + 1} 時程表】")
+    print(f"\n【車隊 {r_idx + 1} 時程表】")
     current_time = start_dt
     for i in range(len(route) - 1):
         curr_node = route[i]
@@ -148,9 +142,8 @@ for r_idx, route in enumerate(routes):
         else:
             print(f"[{current_time.strftime('%H:%M')}] 抵達 {temples[next_node]}", end="")
 
-# ==========================================
-# ★ 自動化管線：將運算結果儲存至 JSON ★
-# ==========================================
+
+# 將運算結果儲存至 JSON
 algo_name = "MILP" 
 
 algo_result = {
@@ -161,7 +154,7 @@ algo_result = {
         "car2_count": len(routes[1]) - 2 if len(routes[1]) > 2 else 0,
         "route1": routes[0],
         "route2": routes[1] if len(routes[1]) > 2 else [],
-        "history": history_log  # ★ 補上剛剛製作的回放歷史紀錄
+        "history": history_log  
     }
 }
 
@@ -180,4 +173,4 @@ all_results.update(algo_result)
 with open(json_file, "w", encoding="utf-8") as f:
     json.dump(all_results, f, ensure_ascii=False, indent=4)
 
-print(f"\n\n💾 系統提示：【{algo_name}】的運算結果已成功寫入 {json_file}！")
+print(f"\n\n【{algo_name}】的運算結果已成功寫入 {json_file}")
