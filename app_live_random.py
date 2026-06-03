@@ -81,11 +81,20 @@ with st.sidebar:
     st.markdown("---")
     st.subheader("A. 路線模擬")
     
+    if 'last_selected' not in st.session_state:
+        st.session_state.last_selected = df['演算法'].iloc[0] 
+        
+    default_idx = 0
+    if st.session_state.last_selected in df['演算法'].values:
+        default_idx = int(df[df['演算法'] == st.session_state.last_selected].index[0])
+        
     dropdown_options = [f"{row['演算法']} ({row['總距離 (km)']:.2f} km)" for _, row in df.iterrows()]
-    selected_option = st.selectbox("在地圖上檢視演算法路線：", dropdown_options)
+    
+    selected_option = st.selectbox("在地圖上檢視演算法路線：", dropdown_options, index=default_idx)
     selected_algo = selected_option.split(" ")[0]
     
-
+    st.session_state.last_selected = selected_algo
+    
     # 後端重新運算
     if st.button(f"重新運算 {selected_algo}", use_container_width=True):
         file_map = {
@@ -105,21 +114,19 @@ with st.sidebar:
             target_file = file_map[selected_algo]
             with st.spinner("運算中"):
                 my_env = os.environ.copy() 
-                
                 result = subprocess.run(
                     [sys.executable, "-u", target_file], 
                     capture_output=True, 
                     text=True,
-                    env=my_env 
+                    env=my_env
                 )
             
             if result.returncode == 0:
-                st.rerun()
+                st.rerun() 
             else:
-                st.error(f"演算法執行失敗，請檢查背景錯誤：\n\n{result.stderr}")
+                st.error(f"❌ 演算法執行失敗！請檢查背景錯誤：\n\n{result.stderr}")
         else:
             st.error("系統找不到對應的演算法檔案")
-    
             
     st.markdown("---")
     st.subheader("B. 數據分析")
