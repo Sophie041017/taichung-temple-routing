@@ -220,7 +220,12 @@ draw_route_with_time(r2, "#3498db", "車隊二")
 
 st_folium(m, width=1200, height=500, returned_objects=[])
 
-st.markdown("### 📍 車隊時程表")
+st.markdown("<br><br>", unsafe_allow_html=True) 
+st.divider()
+
+
+st.markdown("### 車隊行程表")
+
 col_t1, col_t2 = st.columns(2)
 with col_t1:
     st.markdown("####  **< 車隊一 >**")
@@ -228,6 +233,9 @@ with col_t1:
 with col_t2:
     st.markdown("####  **< 車隊二 >**")
     if r2: st.dataframe(generate_schedule(r2), hide_index=True, use_container_width=True)
+
+st.markdown("<br><br><br>", unsafe_allow_html=True) 
+st.divider()
 
 # 5. 效能分析圖表
 st.markdown("### 📍 演算法比較 ")
