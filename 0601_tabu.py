@@ -140,7 +140,6 @@ print(f"(此車行駛距離: {best_dist_2:.2f} 公里 | 負責 {len(best_route_2
 
 
 #將運算結果儲存至 JSON
-
 import json
 import os
 
@@ -162,9 +161,9 @@ old_best_dist = float('inf')
 if algo_name in all_results and "distance" in all_results[algo_name]:
     old_best_dist = all_results[algo_name]["distance"]
 
-# 3.
+# 3. 檢查
 if best_cost < old_best_dist:
-    print(f"[{algo_name}] 發現更佳路線！從 {old_best_dist:.2f} km 到 {best_cost:.2f} km")
+    print(f"[{algo_name}] 發現更佳路線！從 {old_best_dist:.2f} km 進步到 {best_cost:.2f} km")
     
     # 準備要寫入的新資料
     all_results[algo_name] = {
@@ -180,4 +179,6 @@ if best_cost < old_best_dist:
     # 執行存檔覆蓋
     with open(json_file, "w", encoding="utf-8") as f:
         json.dump(all_results, f, ensure_ascii=False, indent=4)
-
+        
+else:
+    print(f"[{algo_name}] 這次距離 ({best_cost:.2f} km) 未打破歷史紀錄 ({old_best_dist:.2f} km)，保持原結果。")
