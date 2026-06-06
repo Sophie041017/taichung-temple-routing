@@ -80,8 +80,8 @@ with st.sidebar:
     st.title("候選人拜票路線問題")
     st.markdown("---")
     
-    # A：路線模擬
-    st.subheader("A. 路線模擬")
+    # A：利用 [#section_a] 語法將標題變成可點擊的按鈕
+    st.markdown("### [A. 路線模擬](#section_a)")
     
     if 'last_selected' not in st.session_state:
         st.session_state.last_selected = df['演算法'].iloc[0] 
@@ -94,35 +94,20 @@ with st.sidebar:
     
     selected_option = st.selectbox("在地圖上檢視演算法路線：", dropdown_options, index=default_idx)
     selected_algo = selected_option.split(" ")[0]
-    
     st.session_state.last_selected = selected_algo
     
-    # 後端重新運算
+    # 後端重新運算按鈕
     if st.button(f"重新運算 {selected_algo}", use_container_width=True):
         file_map = {
-            "Greedy": "0530_heuristic.py", 
-            "MILP": "0530_milp.py",
-            "2-Opt": "0601_2opt.py",
-            "Savings": "0601_savings.py",
-            "SA": "0601_sa.py",
-            "GA": "0601_ga.py",
-            "ALNS": "0601_alns.py",
-            "ACO": "0601_aco.py",
-            "MA": "0601_ma.py",
-            "TS": "0601_tabu.py"
+            "Greedy": "0530_heuristic.py", "MILP": "0530_milp.py", "2-Opt": "0601_2opt.py",
+            "Savings": "0601_savings.py", "SA": "0601_sa.py", "GA": "0601_ga.py",
+            "ALNS": "0601_alns.py", "ACO": "0601_aco.py", "MA": "0601_ma.py", "TS": "0601_tabu.py"
         }
-        
         if selected_algo in file_map:
             target_file = file_map[selected_algo]
             with st.spinner("運算中..."):
                 my_env = os.environ.copy() 
-                result = subprocess.run(
-                    [sys.executable, "-u", target_file], 
-                    capture_output=True, 
-                    text=True,
-                    env=my_env
-                )
-            
+                result = subprocess.run([sys.executable, "-u", target_file], capture_output=True, text=True, env=my_env)
             if result.returncode == 0:
                 st.rerun() 
             else:
@@ -132,14 +117,14 @@ with st.sidebar:
             
     st.markdown("---")
     
-    #  B：車隊時程表
-    st.subheader("B. 車隊時程表")
+    # B：車隊時程表
+    st.markdown("### [B. 車隊時程表](#section_b)")
     st.markdown("- 車隊一詳細拜票時程\n- 車隊二詳細拜票時程")
     
     st.markdown("---")
     
     # C：數據分析
-    st.subheader("C. 數據分析")
+    st.markdown("### [C. 數據分析](#section_c)")
     st.markdown("- 總距離比較 (油耗)\n- 車隊耗時 vs 總距離\n- 車隊工作分配")
 
 # 3. 頂部儀表板
