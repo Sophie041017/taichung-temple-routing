@@ -196,7 +196,7 @@ if algo_name in all_results and "distance" in all_results[algo_name]:
 
 # 3. 只有新的距離更短，才進行覆蓋存檔
 if best_dist < old_best_dist:
-    print(f"[{algo_name}] 發現更佳路線！從 {old_best_dist:.2f} km 進步到 {best_dist:.2f} km")
+    print(f"[{algo_name}] 發現更佳路線！從 {old_best_dist:.2f} km 到 {best_dist:.2f} km")
     
 
     all_results[algo_name] = {
