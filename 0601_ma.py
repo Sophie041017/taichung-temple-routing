@@ -194,11 +194,11 @@ old_best_dist = float('inf')
 if algo_name in all_results and "distance" in all_results[algo_name]:
     old_best_dist = all_results[algo_name]["distance"]
 
-# 3. 只有新的距離更短，才進行覆蓋存檔
+# 3. 檢查
 if best_dist < old_best_dist:
-    print(f"[{algo_name}] 發現更佳路線！從 {old_best_dist:.2f} km 到 {best_dist:.2f} km")
+    print(f"[{algo_name}] 發現更佳路線！從 {old_best_dist:.2f} km 進步到 {best_dist:.2f} km")
     
-
+    # 準備要寫入的新資料
     all_results[algo_name] = {
         "distance": round(best_dist, 2),
         "time": round(solve_time, 4),
@@ -212,4 +212,6 @@ if best_dist < old_best_dist:
     # 執行存檔覆蓋
     with open(json_file, "w", encoding="utf-8") as f:
         json.dump(all_results, f, ensure_ascii=False, indent=4)
-
+        
+else:
+    print(f"[{algo_name}] 這次距離 ({best_dist:.2f} km) 未打破歷史紀錄 ({old_best_dist:.2f} km)，保持原結果。")
