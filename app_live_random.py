@@ -124,7 +124,7 @@ with st.sidebar:
             if result.returncode == 0:
                 st.rerun() 
             else:
-                st.error(f"❌ 演算法執行失敗！請檢查背景錯誤：\n\n{result.stderr}")
+                st.error(f"演算法執行失敗！請檢查背景錯誤：\n\n{result.stderr}")
         else:
             st.error("系統找不到對應的演算法檔案")
             
@@ -197,9 +197,6 @@ fig1.update_layout(yaxis=dict(range=[df['總距離 (km)'].min()-20, df['總距�
 
 fig2 = px.scatter(df, x='車隊耗時 (分)', y='總距離 (km)', color='演算法', size=[20]*len(df), hover_name='演算法', title='車隊耗時 vs 總距離')
 
-# 調整綠色理想區的範圍：從最快耗時往後抓 30 分鐘的容許值作為高效率區間
-min_time = df['車隊耗時 (分)'].min()
-fig2.add_vrect(x0=min_time - 5, x1=min_time + 30, fillcolor="#2ecc71", opacity=0.15, line_width=0, annotation_text="高效率區", annotation_font_color="white")
 
 fig3 = go.Figure()
 fig3.add_trace(go.Bar(x=df['演算法'], y=df['車隊一 (間)'], name='車隊一', marker_color='#f39c12', text=df['車隊一 (間)'], textposition='auto'))
