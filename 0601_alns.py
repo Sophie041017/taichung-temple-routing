@@ -215,21 +215,10 @@ print(f"(此車行駛距離: {dist_2:.2f} 公里 | 負責 {len(final_route_2)-2}
 import json
 import os
 
-algo_name = "ALNS" 
-
-algo_result = {
-    algo_name: {
-        "distance": round(final_total, 2),
-        "time": round(solve_time, 4),
-        "car1_count": len(final_route_1) - 2,
-        "car2_count": len(final_route_2) - 2 if len(final_route_2) > 2 else 0,
-        "route1": final_route_1,
-        "route2": final_route_2 if len(final_route_2) > 2 else [],
-        "history": history_log 
-    }
-}
-
+algo_name = "ALNS"
 json_file = "results.json"
+
+# 1. 先讀取目前硬碟裡的歷史紀錄
 if os.path.exists(json_file):
     with open(json_file, "r", encoding="utf-8") as f:
         try:
@@ -239,9 +228,29 @@ if os.path.exists(json_file):
 else:
     all_results = {}
 
-all_results.update(algo_result)
+# 2. 找出舊的歷史最佳距離
+old_best_dist = float('inf')
+if algo_name in all_results and "distance" in all_results[algo_name]:
+    old_best_dist = all_results[algo_name]["distance"]
 
-with open(json_file, "w", encoding="utf-8") as f:
-    json.dump(all_results, f, ensure_ascii=False, indent=4)
-
-print(f"\n【{algo_name}】的運算結果已成功寫入 {json_file}")
+# 3.
+if final_total < old_best_dist:
+    print(f"[{algo_name}] 發現更佳路線！從 {old_best_dist:.2f} km 進步到 {final_total:.2f} km")
+    
+    # 準備要寫入的新資料
+    all_results[algo_name] = {
+        "distance": round(final_total, 2),
+        "time": round(solve_time, 4),
+        "car1_count": len(final_route_1) - 2,
+        "car2_count": len(final_route_2) - 2 if len(final_route_2) > 2 else 0,
+        "route1": final_route_1,
+        "route2": final_route_2 if len(final_route_2) > 2 else [],
+        "history": history_log 
+    }
+    
+    # 執行存檔覆蓋
+    with open(json_file, "w", encoding="utf-8") as f:
+        json.dump(all_results, f, ensure_ascii=False, indent=4)
+        
+else:
+    print(f"[{algo_name}] 這次距離 ({final_total:.2f} km) 未打破歷史紀錄 ({old_best_dist:.2f} km)，保持原結果。")
