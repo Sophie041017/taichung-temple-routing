@@ -138,7 +138,7 @@ col1.metric("🏆 最短距離", f"{best_dist_val:.2f} km", f"{best_dist_algo}")
 col2.metric("⚡ 車隊耗時最少", f"{fastest_h} 小時 {fastest_m} 分", f"預計 {finish_time_str} 返回目的地")
 col3.metric("⚖️ 最佳車隊排班", best_bal_str, f"{best_bal_algo}")
 
-# 4. 路線模擬地圖 (移除時間軸，只顯示最終結果)
+# 4. 路線模擬地圖與時間表
 st.markdown(f"### 📍 路線模擬地圖：{selected_algo}")
 
 algo_data = live_data[selected_algo]
@@ -158,15 +158,49 @@ temple_coords = {
 }
 
 m = folium.Map(location=[24.22, 120.65], zoom_start=11, tiles="OpenStreetMap")
-folium.Marker([temple_coords[0][1], temple_coords[0][2]], tooltip="南屯萬和宮", icon=folium.Icon(color="red", icon="home")).add_to(m)
+folium.Marker([temple_coords[0][1], temple_coords[0][2]], tooltip="總部：南屯萬和宮", icon=folium.Icon(color="red", icon="home")).add_to(m)
 
-def draw_route(route, color, car_name):
+def generate_schedule(route):
+    if not route or len(route) < 2: return None
+    schedule = []
+    current_time = datetime.datetime(2026, 1, 1, 9, 0, 0)
+    
+    for i in range(len(route)):
+        curr_node = route[i]
+        if i == 0:
+            schedule.append({"站點": "⭐ 起點", "宮廟名稱": temple_coords[curr_node][0], "抵達時間": "-", "離開時間": current_time.strftime('%H:%M')})
+        else:
+            prev_node = route[i-1]
+            dist_km = dist_matrix[prev_node][curr_node]
+            travel_mins = dist_km / 0.75 # 時速 45km/h = 0.75 km/min
+            current_time += datetime.timedelta(minutes=travel_mins)
+            arrive_str = current_time.strftime('%H:%M')
+            
+            if i == len(route) - 1:
+                schedule.append({"站點": "🏁 終點", "宮廟名稱": temple_coords[curr_node][0], "抵達時間": arrive_str, "離開時間": "-"})
+            else:
+                leave_time = current_time + datetime.timedelta(minutes=30)
+                schedule.append({"站點": f"第 {i} 站", "宮廟名稱": temple_coords[curr_node][0], "抵達時間": arrive_str, "離開時間": leave_time.strftime('%H:%M')})
+                current_time = leave_time
+    return pd.DataFrame(schedule)
+
+def draw_route_with_time(route, color, car_name):
     if not route or len(route) < 2: return
     points = [[temple_coords[i][1], temple_coords[i][2]] for i in route]
     folium.PolyLine(points, color=color, weight=5, opacity=0.8).add_to(m)
     
+    current_time = datetime.datetime(2026, 1, 1, 9, 0, 0)
+    
     for seq, node_idx in enumerate(route):
-        if seq == 0 or seq == len(route) - 1: continue 
+        if seq > 0:
+            current_time += datetime.timedelta(minutes=(dist_matrix[route[seq-1]][node_idx] / 0.75))
+            
+        if seq == 0 or seq == len(route) - 1: 
+            continue 
+            
+        arrive_str = current_time.strftime('%H:%M')
+        current_time += datetime.timedelta(minutes=30)
+        
         lat, lon = temple_coords[node_idx][1], temple_coords[node_idx][2]
         icon_html = f'''
         <div style="background-color: {color}; color: white; border-radius: 50%;
@@ -177,14 +211,23 @@ def draw_route(route, color, car_name):
         '''
         folium.Marker(
             [lat, lon],
-            tooltip=f"{car_name} - 第 {seq} 站：{temple_coords[node_idx][0]}",
+            tooltip=f"{car_name} - 第 {seq} 站：{temple_coords[node_idx][0]} (抵達: {arrive_str})",
             icon=folium.DivIcon(html=icon_html, icon_size=(22, 22), icon_anchor=(11, 11))
         ).add_to(m)
 
-draw_route(r1, "#f39c12", "車隊一")  
-draw_route(r2, "#3498db", "車隊二")  
+draw_route_with_time(r1, "#f39c12", "車隊一")  
+draw_route_with_time(r2, "#3498db", "車隊二")  
 
 st_folium(m, width=1200, height=500, returned_objects=[])
+
+st.markdown("### 🕒 車隊詳細行程表")
+col_t1, col_t2 = st.columns(2)
+with col_t1:
+    st.markdown("#### 🚗 **車隊一**")
+    if r1: st.dataframe(generate_schedule(r1), hide_index=True, use_container_width=True)
+with col_t2:
+    st.markdown("#### 🚙 **車隊二**")
+    if r2: st.dataframe(generate_schedule(r2), hide_index=True, use_container_width=True)
 
 # 5. 效能分析圖表
 st.markdown("### 📍 演算法比較 ")
