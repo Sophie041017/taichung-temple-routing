@@ -127,6 +127,10 @@ with st.sidebar:
     st.markdown("### [C. 數據分析](#section_c)")
     st.markdown("- 總距離比較 (油耗)\n- 車隊耗時 vs 總距離\n- 車隊工作分配")
 
+    # D：Pareto Analysis
+    st.markdown("### [D. 決策分析](#section_d)")
+    st.markdown("- 公平 vs 效率 (帕雷托前沿)")
+
 # 3. 頂部儀表板
 col1, col2, col3 = st.columns(3)
 col1.metric("🏆 最短距離", f"{best_dist_val:.2f} km", f"{best_dist_algo}")
@@ -256,3 +260,33 @@ st.plotly_chart(fig1, width="stretch")
 col_a, col_b = st.columns(2)
 with col_a: st.plotly_chart(fig2, width="stretch")
 with col_b: st.plotly_chart(fig3, width="stretch")
+
+
+# 6. 帕雷托前沿分析 (Pareto Frontier)
+st.markdown("---")
+st.markdown('<div id="section_d"></div>', unsafe_allow_html=True)
+st.markdown("### 決策分析：效率 (Efficiency) vs 公平 (Equity)")
+st.write("在車隊排班實務中，「總距離最短」與「車隊任務均分」通常是互相衝突的雙目標。下圖的 **帕雷托前沿 (Pareto Frontier)** 展示了：當我們逐步放寬任務不平衡的限制時，演算法能為系統省下多少行駛距離。")
+
+import os
+if os.path.exists('pareto_data.json'):
+    import pandas as pd
+    import json
+    
+    with open('pareto_data.json', 'r', encoding='utf-8') as f:
+        p_data = json.load(f)
+    
+    df_pareto = pd.DataFrame(p_data)
+    df_pareto = df_pareto.set_index("任務差值上限")
+    
+    # 畫出曲線圖
+    st.line_chart(df_pareto['總行駛距離 (km)'], color="#FF4B4B")
+    
+    # 計算代價
+    max_fairness_cost = df_pareto['總行駛距離 (km)'].iloc[0]
+    max_efficiency_cost = df_pareto['總行駛距離 (km)'].iloc[-1]
+    cost_diff = max_fairness_cost - max_efficiency_cost
+    
+    st.info(f"**決策洞察 (Insight)：** 若要求車隊絕對均分 (差值為 0)，總距離將高達 **{max_fairness_cost:.2f} km**；若不限制差值 (極致效率)，則可降至 **{max_efficiency_cost:.2f} km**。這代表為了追求絕對的公平，車隊必須付出約 **{cost_diff:.2f} 公里** 的額外油耗代價。")
+else:
+    st.warning("找不到分析數據，請先在後台執行 `generate_pareto.py`")
