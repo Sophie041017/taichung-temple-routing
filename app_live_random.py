@@ -75,10 +75,12 @@ df_bal = df.sort_values(by=['排班差異', '總距離 (km)'])
 best_bal_algo = df_bal.iloc[0]['演算法']
 best_bal_str = f"{df_bal.iloc[0]['車隊一 (間)']} 間 / {df_bal.iloc[0]['車隊二 (間)']} 間"
 
-# 2. 側邊欄：選單 & 重新計算
+# 2. 側邊欄：控制中心
 with st.sidebar:
     st.title("候選人拜票路線問題")
     st.markdown("---")
+    
+    # A：路線模擬
     st.subheader("A. 路線模擬")
     
     if 'last_selected' not in st.session_state:
@@ -112,7 +114,7 @@ with st.sidebar:
         
         if selected_algo in file_map:
             target_file = file_map[selected_algo]
-            with st.spinner("運算中"):
+            with st.spinner("運算中..."):
                 my_env = os.environ.copy() 
                 result = subprocess.run(
                     [sys.executable, "-u", target_file], 
@@ -129,7 +131,15 @@ with st.sidebar:
             st.error("系統找不到對應的演算法檔案")
             
     st.markdown("---")
-    st.subheader("B. 數據分析")
+    
+    #  B：車隊時程表
+    st.subheader("B. 車隊時程表")
+    st.markdown("- 車隊一詳細拜票時程\n- 車隊二詳細拜票時程")
+    
+    st.markdown("---")
+    
+    # C：數據分析
+    st.subheader("C. 數據分析")
     st.markdown("- 總距離比較 (油耗)\n- 車隊耗時 vs 總距離\n- 車隊工作分配")
 
 # 3. 頂部儀表板
