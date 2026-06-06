@@ -173,7 +173,7 @@ def generate_schedule(route):
             arrive_str = current_time.strftime('%H:%M')
             
             if i == len(route) - 1:
-                schedule.append({"站點": "🏁 終點", "宮廟名稱": temple_coords[curr_node][0], "抵達時間": arrive_str, "離開時間": "-"})
+                schedule.append({"站點": "終點", "宮廟名稱": temple_coords[curr_node][0], "抵達時間": arrive_str, "離開時間": "-"})
             else:
                 leave_time = current_time + datetime.timedelta(minutes=30)
                 schedule.append({"站點": f"第 {i} 站", "宮廟名稱": temple_coords[curr_node][0], "抵達時間": arrive_str, "離開時間": leave_time.strftime('%H:%M')})
