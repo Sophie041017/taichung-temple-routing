@@ -168,7 +168,7 @@ def generate_schedule(route):
     for i in range(len(route)):
         curr_node = route[i]
         if i == 0:
-            schedule.append({"站點": "⭐ 起點", "宮廟名稱": temple_coords[curr_node][0], "抵達時間": "-", "離開時間": current_time.strftime('%H:%M')})
+            schedule.append({"站點": "起點", "宮廟名稱": temple_coords[curr_node][0], "抵達時間": "-", "離開時間": current_time.strftime('%H:%M')})
         else:
             prev_node = route[i-1]
             dist_km = dist_matrix[prev_node][curr_node]
@@ -220,7 +220,7 @@ draw_route_with_time(r2, "#3498db", "車隊二")
 
 st_folium(m, width=1200, height=500, returned_objects=[])
 
-st.markdown("### 🕒 車隊詳細行程表")
+st.markdown("### 📍 車隊時程表")
 col_t1, col_t2 = st.columns(2)
 with col_t1:
     st.markdown("#### 🚗 **車隊一**")
