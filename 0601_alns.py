@@ -14,7 +14,7 @@ n = len(temples)
 start_time = time.time()
 
 
-MAX_CAPACITY = 15
+MAX_CAPACITY = 16
 
 def calc_dist(route):
     return sum(dist[route[k]][route[k+1]] for k in range(len(route)-1))
