@@ -284,7 +284,7 @@ with col_b: st.plotly_chart(fig3, width="stretch")
 st.markdown("---")
 st.markdown('<div id="section_d"></div>', unsafe_allow_html=True)
 st.markdown("### 📍 決策分析：效率 vs 公平")
-st.write("在車隊排班實務中，「總距離最短」與「車隊任務均分」通常是互相衝突的目標。下圖的 Pareto Frontier 展示了當我們逐步放寬任務不平衡的限制時，演算法能為系統省下多少行駛距離。")
+st.write("在實際車隊排班中，要求「總距離最短」與「車隊任務均分」可能會是互相衝突的目標。下圖的 Pareto Frontier 展示了當我們逐步放寬任務不平衡的限制時，演算法能為系統省下多少行駛距離。")
 
 import os
 if os.path.exists('pareto_data.json'):
