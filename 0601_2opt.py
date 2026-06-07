@@ -13,7 +13,7 @@ n = len(temples)
 start_time_greedy = time.time()
 
 
-# 2. 生成初始解 (全域貪婪 - 無平衡限制)
+# 2. 生成初始解
 unvisited = set(range(1, n))
 routes = [[0], [0]]
 
@@ -45,12 +45,12 @@ greedy_dist_2 = calc_route_dist(routes[1])
 greedy_total = greedy_dist_1 + greedy_dist_2
 greedy_time = time.time() - start_time_greedy
 
-print(f"貪婪法總距離: {greedy_total:.2f} 公里 (車隊一: {greedy_dist_1:.2f} | 車隊二: {greedy_dist_2:.2f})")
+print(f"總距離: {greedy_total:.2f} 公里 (車隊一: {greedy_dist_1:.2f} | 車隊二: {greedy_dist_2:.2f})")
 
 
 # 記錄 2-Opt 歷史軌跡
 history_log = []
-step_count = [0] # 用 list 包裝以便在函數內修改
+step_count = [0] 
 current_routes = [routes[0][:], routes[1][:]]
 
 # Step 0: Greedy 剛跑完
@@ -62,8 +62,7 @@ history_log.append({
 })
 
 
-# 3. 2-Opt 局部搜尋演算法 (加入動態軌跡記錄)
-print("\n啟動 2-Opt 演算法，解開交叉路線...")
+# 3. 2-Opt 局部搜尋演算法 (加入動態軌跡)
 start_time_2opt = time.time()
 
 def two_opt_with_history(car_idx, dist_matrix):
@@ -85,7 +84,7 @@ def two_opt_with_history(car_idx, dist_matrix):
                     best_dist = new_dist
                     improved = True
                     
-                    # 動態記錄：更新全域狀態並存入 history_log
+                    # 更新全域狀態並存入 history_log
                     current_routes[car_idx] = best_route[:]
                     step_count[0] += 1
                     total_cost = calc_route_dist(current_routes[0]) + calc_route_dist(current_routes[1])
@@ -109,21 +108,20 @@ opt_total = opt_dist_1 + opt_dist_2
 opt_time = (time.time() - start_time_2opt) + greedy_time
 
 # 4. 輸出最終比較結果
-print("2-Opt 演算法優化結果")
 print(f"總耗時: {opt_time:.6f} 秒")
-print(f"優化後總距離: {opt_total:.2f} 公里")
+print(f"總距離: {opt_total:.2f} 公里")
 
 print("\n【2-Opt - 車隊一 路線】")
 for idx in optimized_route_1:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
-print(f"(此車行駛距離: {opt_dist_1:.2f} 公里 | 負責 {len(optimized_route_1)-2} 間宮廟)")
+print(f"(行駛距離: {opt_dist_1:.2f} 公里 | 負責 {len(optimized_route_1)-2} 間宮廟)")
 
 print("\n【2-Opt - 車隊二 路線】")
 for idx in optimized_route_2:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
-print(f"(此車行駛距離: {opt_dist_2:.2f} 公里 | 負責 {len(optimized_route_2)-2} 間宮廟)")
+print(f"(行駛距離: {opt_dist_2:.2f} 公里 | 負責 {len(optimized_route_2)-2} 間宮廟)")
 
 
 # 將運算結果儲存至 JSON
