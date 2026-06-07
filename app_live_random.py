@@ -274,7 +274,7 @@ st.plotly_chart(fig4, width="stretch")
 fastest_algo = df.loc[df["運算時間 (s)"].idxmin()]
 slowest_algo = df.loc[df["運算時間 (s)"].idxmax()]
 
-st.info(f" ** 運算最快的是 **{fastest_algo['演算法']}** (僅需 **{fastest_algo['運算時間 (s)']:.4f} 秒**)；運算最久的是 **{slowest_algo['演算法']}** (需 **{slowest_algo['運算時間 (s)']:.4f} 秒**)。這完美展示了題意要求的『目標值與求解時間』對比，證明了數學規劃與啟發式演算法在效率上的差異！")
+st.info(f" 運算最快的是 **{fastest_algo['演算法']}** (僅需 **{fastest_algo['運算時間 (s)']:.4f} 秒**)；運算最久的是 **{slowest_algo['演算法']}** (需 **{slowest_algo['運算時間 (s)']:.4f} 秒**)，顯示出數學規劃與啟發式演算法在效率上的差異")
 
 # 顯示原本的兩個小圖
 col_a, col_b = st.columns(2)
