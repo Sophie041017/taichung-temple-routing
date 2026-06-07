@@ -307,6 +307,6 @@ if os.path.exists('pareto_data.json'):
     max_efficiency_cost = df_pareto['總行駛距離 (km)'].iloc[-1]
     cost_diff = max_fairness_cost - max_efficiency_cost
     
-    st.info(f"**Insight：** 若要求車隊絕對均分 (差值為 0)，總距離將高達 **{max_fairness_cost:.2f} km**；若不限制差值 (極致效率)，則可降至 **{max_efficiency_cost:.2f} km**。這代表為了追求絕對的公平，車隊必須付出約 **{cost_diff:.2f} 公里** 的額外油耗代價。")
+    st.info(f"若要求車隊絕對均分 (差值為 0)，總距離將高達 **{max_fairness_cost:.2f} km**；若不限制差值 (極致效率)，則可降至 **{max_efficiency_cost:.2f} km**，也就是說若為追求公平，車隊必須付出約 **{cost_diff:.2f} 公里** 的額外油耗。")
 else:
     st.warning("找不到分析數據，請先在後台執行 `generate_pareto.py`")
