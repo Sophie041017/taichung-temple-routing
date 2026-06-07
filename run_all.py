@@ -5,17 +5,16 @@ import time
 
 
 scripts_to_run = [
-    "0530_milp.py",
-    "0530_heuristic.py",
-    "0601_2opt.py",
-    "0601_aco.py",
-    "0601_alns.py",
-    "0601_sa.py",
-    "0601_savings.py",
-    "0601_ga.py",
-    "0601_ma.py",
-    "0601_tabu.py",         
-    "0601_dynamic_html.py"
+    "MILP.py",
+    "greedy.py",
+    "2opt.py",
+    "aco.py",
+    "alns.py",
+    "sa.py",
+    "savings.py",
+    "ga.py",
+    "ma.py",
+    "ts.py",         
 ]
 
 
