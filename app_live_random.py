@@ -129,7 +129,7 @@ with st.sidebar:
 
     # D：Pareto Analysis
     st.markdown("### [D. 決策分析](#section_d)")
-    st.markdown("- 公平 vs 效率 (Pareto frontier)")
+    st.markdown("- Pareto frontier")
 
 # 3. 頂部儀表板
 col1, col2, col3 = st.columns(3)
@@ -273,8 +273,6 @@ st.plotly_chart(fig4, width="stretch")
 # 自動找出最快和最慢的演算法
 fastest_algo = df.loc[df["運算時間 (s)"].idxmin()]
 slowest_algo = df.loc[df["運算時間 (s)"].idxmax()]
-
-st.info(f" 運算最快的是 **{fastest_algo['演算法']}** (僅需 **{fastest_algo['運算時間 (s)']:.4f} 秒**)；運算最久的是 **{slowest_algo['演算法']}** (需 **{slowest_algo['運算時間 (s)']:.4f} 秒**)，顯示出數學規劃與啟發式演算法在效率上的差異")
 
 # 顯示原本的兩個小圖
 col_a, col_b = st.columns(2)
