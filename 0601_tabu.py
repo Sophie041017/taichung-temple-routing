@@ -12,7 +12,7 @@ dist = df_dist.values
 n = len(temples)
 
 
-# 2. 定義狀態解碼與成本函數
+# 2. 定義狀態解碼 & 成本函數
 def calc_total_dist(state):
     best_split_cost = float('inf')
     best_dist1 = 0
@@ -38,7 +38,7 @@ def calc_total_dist(state):
     return best_split_cost, best_dist1, best_dist2, best_route1, best_route2
 
 
-# 3. 設定禁忌搜尋 (Tabu Search) 參數
+# 3. 設定禁忌搜尋參數
 MAX_ITER = 300       # 最大迭代次數
 TABU_TENURE = 15     # 禁忌期限
 
@@ -119,23 +119,20 @@ for iteration in range(MAX_ITER):
 _, best_dist_1, best_dist_2, best_route_1, best_route_2 = calc_total_dist(best_state)
 solve_time = time.time() - start_time
 
-print("\n" + "="*50)
-print("禁忌搜尋法 (TS) 最佳化結果")
-print("="*50)
 print(f"總耗時: {solve_time:.6f} 秒 (共迭代 {MAX_ITER} 次，每次評估 136 個鄰居)")
 print(f"最佳總距離: {best_cost:.2f} 公里")
 
-print("\n【TS 優化 - 車隊一 路線】")
+print("\n【Tabu Search - 車隊一 路線】")
 for idx in best_route_1:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
-print(f"(此車行駛距離: {best_dist_1:.2f} 公里 | 負責 {len(best_route_1)-2} 間宮廟)")
+print(f"(行駛距離: {best_dist_1:.2f} 公里 | 負責 {len(best_route_1)-2} 間宮廟)")
 
-print("\n【TS 優化 - 車隊二 路線】")
+print("\n【Tabu Search - 車隊二 路線】")
 for idx in best_route_2:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
-print(f"(此車行駛距離: {best_dist_2:.2f} 公里 | 負責 {len(best_route_2)-2} 間宮廟)")
+print(f"(行駛距離: {best_dist_2:.2f} 公里 | 負責 {len(best_route_2)-2} 間宮廟)")
 
 
 
@@ -146,7 +143,7 @@ import os
 algo_name = "TS"
 json_file = "results.json"
 
-# 1. 先讀取目前硬碟裡的歷史紀錄
+# 1. 先讀取目前的歷史紀錄
 if os.path.exists(json_file):
     with open(json_file, "r", encoding="utf-8") as f:
         try:
@@ -163,7 +160,7 @@ if algo_name in all_results and "distance" in all_results[algo_name]:
 
 # 3. 檢查
 if best_cost < old_best_dist:
-    print(f"[{algo_name}] 發現更佳路線！從 {old_best_dist:.2f} km 進步到 {best_cost:.2f} km")
+    print(f"[{algo_name}] 發現更佳路線，從 {old_best_dist:.2f} km 變為 {best_cost:.2f} km")
     
     # 準備要寫入的新資料
     all_results[algo_name] = {
