@@ -9,7 +9,6 @@ temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
 
-print("開始執行啟發式演算法 (交替貪婪最近鄰)...")
 start_time = time.time()
 
 # 2. 初始化變數
@@ -97,7 +96,7 @@ print(f"(此車行駛距離: {distances[1]:.2f} 公里 | 負責 {len(routes[1])-
 import json
 import os
 
-# 1. 定義這支演算法的名稱
+# 1. 定義演算法的名稱
 algo_name = "Greedy" 
 
 # 2. 統整
