@@ -8,7 +8,6 @@ import json
 import os
 
 # 1. 讀取生成的距離矩陣
-print("讀取距離矩陣中...")
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
 temples = df_dist.columns.tolist()
 n = len(temples)
