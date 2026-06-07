@@ -12,7 +12,6 @@ dist = df_dist.values
 n = len(df_dist.columns) # n=18 (1起點 + 17宮廟)
 
 pareto_results = []
-print("開始生成帕雷托前沿數據 (Pareto Frontier)... 這次精度提高，約需 10~15 秒，請稍候")
 
 # 2. 測試不同的最大不平衡度
 for max_diff in range(1, 18, 2): 
@@ -65,4 +64,4 @@ for max_diff in range(1, 18, 2):
 # 3. 存檔給網頁讀取
 with open('pareto_data.json', 'w', encoding='utf-8') as f:
     json.dump(pareto_results, f, ensure_ascii=False, indent=4)
-print("\n生成完畢！已儲存至 pareto_data.json")
+print("\n生成完畢，已儲存至 pareto_data.json")
