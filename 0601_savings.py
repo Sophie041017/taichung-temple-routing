@@ -55,7 +55,7 @@ def log_history(current_routes, step):
 log_history(routes, step_count)
 
 
-# 3. 計算所有節點對的節約值 (Savings)
+# 3. 計算所有節點對的 Savings 值
 savings = []
 for i in range(1, n):
     for j in range(i + 1, n):
@@ -65,7 +65,7 @@ for i in range(1, n):
 savings.sort(key=lambda x: x[0], reverse=True)
 
 
-# 4. 節約合併主迴圈
+# 4. 合併主迴圈
 for s, i, j in savings:
     if len(routes) == 2:
         break 
@@ -137,23 +137,20 @@ history_log.append({
 
 
 # 6. 輸出最終結果
-print("\n" + "="*50)
-print("節約演算法 (Savings) + 2-Opt 最佳化結果")
-print("="*50)
 print(f"總耗時: {solve_time:.6f} 秒")
 print(f"最佳總距離: {opt_total:.2f} 公里")
 
-print("\n【節約演算法 - 車隊一 路線】")
+print("\n【 Savings - 車隊一 路線】")
 for idx in opt_route_1:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
-print(f"(此車行駛距離: {opt_dist_1:.2f} 公里 | 負責 {len(opt_route_1)-2} 間宮廟)")
+print(f"(行駛距離: {opt_dist_1:.2f} 公里 | 負責 {len(opt_route_1)-2} 間宮廟)")
 
-print("\n【節約演算法 - 車隊二 路線】")
+print("\n【 Savings - 車隊二 路線】")
 for idx in opt_route_2:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
-print(f"(此車行駛距離: {opt_dist_2:.2f} 公里 | 負責 {len(opt_route_2)-2} 間宮廟)")
+print(f"(行駛距離: {opt_dist_2:.2f} 公里 | 負責 {len(opt_route_2)-2} 間宮廟)")
 
 
 
