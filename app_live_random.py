@@ -99,9 +99,9 @@ with st.sidebar:
     # 後端重新運算按鈕
     if st.button(f"重新運算 {selected_algo}", use_container_width=True):
         file_map = {
-            "Greedy": "0530_heuristic.py", "MILP": "0530_milp.py", "2-Opt": "0601_2opt.py",
-            "Savings": "0601_savings.py", "SA": "0601_sa.py", "GA": "0601_ga.py",
-            "ALNS": "0601_alns.py", "ACO": "0601_aco.py", "MA": "0601_ma.py", "TS": "0601_tabu.py"
+            "Greedy": "greedy.py", "MILP": "MILP.py", "2-Opt": "2opt.py",
+            "Savings": "savings.py", "SA": "sa.py", "GA": "ga.py",
+            "ALNS": "alns.py", "ACO": "aco.py", "MA": "ma.py", "TS": "ts.py"
         }
         if selected_algo in file_map:
             target_file = file_map[selected_algo]
