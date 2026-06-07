@@ -26,7 +26,7 @@ history_log.append({
     "route2": routes[1][:]
 })
 
-# 3. 啟發式：全域貪婪 (無平衡限制)
+# 3. 全域貪婪
 while unvisited:
     step += 1
     # 找車隊一離哪個未拜訪宮廟最近
@@ -75,15 +75,14 @@ solve_time = end_time - start_time
 total_distance = sum(distances)
 
 # 5. 輸出比較結果
-print("-" * 30)
 print(f"耗時: {solve_time:.6f} 秒")
-print(f"啟發式總距離: {total_distance:.2f} 公里")
+print(f"總距離: {total_distance:.2f} 公里")
 
 print("\n【全域貪婪 - 車隊一 路線】")
 for idx in routes[0]:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
-print(f"(此車行駛距離: {distances[0]:.2f} 公里 | 負責 {len(routes[0])-2} 間宮廟)")
+print(f"(行駛距離: {distances[0]:.2f} 公里 | 負責 {len(routes[0])-2} 間宮廟)")
 
 print("\n【全域貪婪 - 車隊二 路線】")
 for idx in routes[1]:
