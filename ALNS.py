@@ -7,10 +7,6 @@ import math
 import time
 
 
-BEST_SEED = 42
-random.seed(BEST_SEED)
-np.random.seed(BEST_SEED)
-
 # 1. 讀取距離矩陣
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
 temples = df_dist.columns.tolist()
