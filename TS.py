@@ -2,6 +2,7 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import pandas as pd
 import random
+import numpy as np
 import time
 
 
