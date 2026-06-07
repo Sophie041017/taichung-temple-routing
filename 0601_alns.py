@@ -23,7 +23,7 @@ def evaluate(routes):
     return calc_dist([0]+routes[0]+[0]) + calc_dist([0]+routes[1]+[0])
 
 
-# 2. 定義破壞算子 (Destroy Operators)
+# 2. 定義 Destroy Operators
 def destroy_random(routes, q):
     new_routes = [r[:] for r in routes]
     removed = []
@@ -52,7 +52,7 @@ def destroy_worst(routes, q):
     return new_routes, removed
 
 
-# 3. 定義修復算子 (Repair Operator)
+# 3. 定義 Repair Operator
 def repair_greedy(routes, removed):
     new_routes = [r[:] for r in routes]
     random.shuffle(removed) 
@@ -190,25 +190,22 @@ history_log.append({
 
 
 # 6. 輸出最終結果
-print("\n" + "="*50)
-print("ALNS (適應性大鄰域搜尋法) 最佳化結果")
-print("="*50)
 print(f"總耗時: {solve_time:.6f} 秒")
 print(f"最佳總距離: {final_total:.2f} 公里")
 
-print(f"\n AI 演算法偏好: [隨機破壞權重: {weights[0]:.2f}] vs [最差破壞權重: {weights[1]:.2f}]")
+print(f"\n 演算法偏好: [隨機破壞權重: {weights[0]:.2f}] vs [最差破壞權重: {weights[1]:.2f}]")
 
-print("\n【ALNS 優化 - 車隊一 路線】")
+print("\n【ALNS - 車隊一 路線】")
 for idx in final_route_1:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
-print(f"(此車行駛距離: {dist_1:.2f} 公里 | 負責 {len(final_route_1)-2} 間宮廟)")
+print(f"(行駛距離: {dist_1:.2f} 公里 | 負責 {len(final_route_1)-2} 間宮廟)")
 
-print("\n【ALNS 優化 - 車隊二 路線】")
+print("\n【ALNS - 車隊二 路線】")
 for idx in final_route_2:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
-print(f"(此車行駛距離: {dist_2:.2f} 公里 | 負責 {len(final_route_2)-2} 間宮廟)")
+print(f"(行駛距離: {dist_2:.2f} 公里 | 負責 {len(final_route_2)-2} 間宮廟)")
 
 
 # 將運算結果儲存至 JSON
@@ -218,7 +215,7 @@ import os
 algo_name = "ALNS"
 json_file = "results.json"
 
-# 1. 先讀取目前硬碟裡的歷史紀錄
+# 1. 先讀取目前的歷史紀錄
 if os.path.exists(json_file):
     with open(json_file, "r", encoding="utf-8") as f:
         try:
@@ -235,7 +232,7 @@ if algo_name in all_results and "distance" in all_results[algo_name]:
 
 # 3.
 if final_total < old_best_dist:
-    print(f"[{algo_name}] 發現更佳路線！從 {old_best_dist:.2f} km 進步到 {final_total:.2f} km")
+    print(f"[{algo_name}] 發現更佳路線，從 {old_best_dist:.2f} km 變為 {final_total:.2f} km")
     
     # 準備要寫入的新資料
     all_results[algo_name] = {
