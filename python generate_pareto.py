@@ -9,24 +9,23 @@ import time
 # 1. 讀取距離矩陣
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
 dist = df_dist.values
-n = len(df_dist.columns)
+n = len(df_dist.columns) # n=18 (1起點 + 17宮廟)
 
 pareto_results = []
-print("開始生成帕雷托前沿數據 (Pareto Frontier)... 這可能需要幾秒鐘")
+print("開始生成帕雷托前沿數據 (Pareto Frontier)... 這次精度提高，約需 10~15 秒，請稍候")
 
-# 2. 測試不同的「最大不平衡度」(兩車任務數的差值)
-# 16間廟，差值可能是 0(8v8), 2(9v7), 4(10v6), 6, 8, 10, 12, 14(15v1)
-for max_diff in range(0, 15, 2): 
+# 2. 測試不同的最大不平衡度
+for max_diff in range(1, 18, 2): 
     best_cost = float('inf')
     
-    # 用 SA 快速尋優 10 次取最佳
-    for _ in range(10):
+    # 增加為 20 次尋優，確保穩定度
+    for _ in range(20):
         state = list(range(1, n))
         random.shuffle(state)
         
         def get_cost(s):
             min_c = float('inf')
-            for k in range(1, n-1): # 確保兩車都有出發
+            for k in range(1, n-1): 
                 r1 = [0] + s[:k] + [0]
                 r2 = [0] + s[k:] + [0]
                 c1 = sum(dist[r1[i]][r1[i+1]] for i in range(len(r1)-1))
@@ -34,7 +33,6 @@ for max_diff in range(0, 15, 2):
                 diff = abs((len(r1)-2) - (len(r2)-2))
                 cost = c1 + c2
                 
-                # 核心：加入動態懲罰函數
                 if diff > max_diff:
                     cost += 10000 
                 if cost < min_c:
@@ -44,7 +42,7 @@ for max_diff in range(0, 15, 2):
         curr_cost = get_cost(state)
         T = 100.0
         while T > 0.1:
-            for _ in range(20): # 內部探索
+            for _ in range(200): 
                 i, j = random.sample(range(len(state)), 2)
                 new_state = state[:]
                 new_state[i], new_state[j] = new_state[j], new_state[i]
@@ -67,4 +65,4 @@ for max_diff in range(0, 15, 2):
 # 3. 存檔給網頁讀取
 with open('pareto_data.json', 'w', encoding='utf-8') as f:
     json.dump(pareto_results, f, ensure_ascii=False, indent=4)
-print("\n🎉 生成完畢！已儲存至 pareto_data.json")
+print("\n生成完畢！已儲存至 pareto_data.json")
