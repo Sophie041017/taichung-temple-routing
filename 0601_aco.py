@@ -10,11 +10,11 @@ temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
 
-# 2. ACO 核心參數設定
+# 2. 參數設定
 N_ANTS = 30          # 螞蟻數量 (每回合派 30 隻螞蟻出去找路)
 ITERATIONS = 100     # 迭代次數 (讓蟻群找 100 回合)
-ALPHA = 1.0          # 費洛蒙的重要性 (數值越高，螞蟻越盲從前人的路線)
-BETA = 2.0           # 距離可見度的重要性 (數值越高，螞蟻越傾向選眼前最近的宮廟)
+ALPHA = 1.0          # 費洛蒙 (數值越高，螞蟻越盲從前人的路線)
+BETA = 2.0           # 距離可見度 (數值越高，螞蟻越傾向選眼前最近的宮廟)
 EVAPORATION = 0.5    # 費洛蒙揮發率 (0.5 代表每回合蒸發 50%，避免卡在局部最佳解)
 Q = 100              # 費洛蒙釋放總量常數
 
@@ -22,7 +22,7 @@ Q = 100              # 費洛蒙釋放總量常數
 pheromone = [[0.1 for _ in range(n)] for _ in range(n)]
 
 
-# 3. 螞蟻挑選下一站的邏輯 (輪盤法)
+# 3. 螞蟻挑選下一站 (輪盤法)
 def select_next_node(current, unvisited):
     probabilities = []
     
@@ -135,23 +135,21 @@ for iteration in range(ITERATIONS):
 # 5. 輸出最終結果
 solve_time = time.time() - start_time
 
-print("\n" + "="*50)
-print("蟻群演算法 (ACO) 結果")
-print("="*50)
+
 print(f"總耗時: {solve_time:.6f} 秒 (螞蟻數: {N_ANTS}, 迭代: {ITERATIONS})")
 print(f"最佳總距離: {best_overall_cost:.2f} 公里")
 
-print("\n【ACO 優化 - 車隊一 路線】")
+print("\n【ACO - 車隊一 路線】")
 for idx in best_route_1:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
-print(f"(此車行駛距離: {best_dist_1:.2f} 公里 | 負責 {len(best_route_1)-2} 間宮廟)")
+print(f"(行駛距離: {best_dist_1:.2f} 公里 | 負責 {len(best_route_1)-2} 間宮廟)")
 
-print("\n【ACO 優化 - 車隊二 路線】")
+print("\n【ACO - 車隊二 路線】")
 for idx in best_route_2:
     print(f"{temples[idx]} -> ", end="")
 print("回到起點")
-print(f"(此車行駛距離: {best_dist_2:.2f} 公里 | 負責 {len(best_route_2)-2} 間宮廟)")
+print(f"(行駛距離: {best_dist_2:.2f} 公里 | 負責 {len(best_route_2)-2} 間宮廟)")
 
 
 
@@ -162,7 +160,7 @@ import os
 algo_name = "ACO"
 json_file = "results.json"
 
-# 1. 先讀取目前硬碟裡的歷史紀錄
+# 1. 先讀取目前的歷史紀錄
 if os.path.exists(json_file):
     with open(json_file, "r", encoding="utf-8") as f:
         try:
@@ -179,7 +177,7 @@ if algo_name in all_results and "distance" in all_results[algo_name]:
 
 # 3.
 if best_overall_cost < old_best_dist:
-    print(f"[{algo_name}] 發現更佳路線！從 {old_best_dist:.2f} km 進步到 {best_overall_cost:.2f} km")
+    print(f"[{algo_name}] 發現更佳路線，從 {old_best_dist:.2f} km 變為 {best_overall_cost:.2f} km")
     
     # 準備要寫入的新資料
     all_results[algo_name] = {
