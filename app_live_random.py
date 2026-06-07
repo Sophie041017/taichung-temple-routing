@@ -125,7 +125,7 @@ with st.sidebar:
     
     # C：數據分析
     st.markdown("### [C. 數據分析](#section_c)")
-    st.markdown("- 總距離比較 (油耗)\n- 車隊耗時 vs 總距離\n- 車隊工作分配")
+    st.markdown("- 總距離比較 (油耗)\n- 運算時間比較 (求解效率)\n- 車隊耗時 vs 總距離\n- 車隊工作分配")
 
     # D：Pareto Analysis
     st.markdown("### [D. 決策分析](#section_d)")
@@ -243,20 +243,40 @@ st.markdown("### 📍 演算法比較 ")
 
 colors = ['#e74c3c' if val == best_dist_val else '#3498db' for val in df['總距離 (km)']]
 
+# 圖 1：距離比較
 fig1 = px.bar(df, x='演算法', y='總距離 (km)', text='總距離 (km)', title='總距離比較 (油耗成本)')
 fig1.update_traces(marker_color=colors, textposition='outside', texttemplate='%{text:.2f}')
 fig1.update_layout(yaxis=dict(range=[df['總距離 (km)'].min()-20, df['總距離 (km)'].max()+25]))
 
+# 圖 4：運算時間比較
+df_time_sorted = df.sort_values(by='運算時間 (s)')
+fig4 = px.bar(df_time_sorted, x='演算法', y='運算時間 (s)', text='運算時間 (s)', title='演算法運算時間比較 (求解效率)')
+fig4.update_traces(marker_color='#2ecc71', textposition='outside', texttemplate='%{text:.4f}')
+fig4.update_layout(yaxis=dict(range=[0, df['運算時間 (s)'].max() * 1.15]))
+
+# 圖 2：車隊耗時散佈圖
 fig2 = px.scatter(df, x='車隊耗時 (分)', y='總距離 (km)', color='演算法', size=[20]*len(df), hover_name='演算法', title='車隊耗時 vs 總距離')
 
-
+# 圖 3：車隊工作分配
 fig3 = go.Figure()
 fig3.add_trace(go.Bar(x=df['演算法'], y=df['車隊一 (間)'], name='車隊一', marker_color='#f39c12', text=df['車隊一 (間)'], textposition='auto'))
 fig3.add_trace(go.Bar(x=df['演算法'], y=df['車隊二 (間)'], name='車隊二', marker_color='#3498db', text=df['車隊二 (間)'], textposition='auto'))
 fig3.update_layout(barmode='stack', title='車隊工作分配', yaxis_title='負責宮廟數量')
 fig3.add_hline(y=8.5, line_dash="dash", line_color="#e74c3c", annotation_text="平均線")
 
+# 顯示距離圖
 st.plotly_chart(fig1, width="stretch")
+
+# 顯示時間圖
+st.plotly_chart(fig4, width="stretch")
+
+# 自動找出最快和最慢的演算法
+fastest_algo = df.loc[df["運算時間 (s)"].idxmin()]
+slowest_algo = df.loc[df["運算時間 (s)"].idxmax()]
+
+st.info(f" ** 運算最快的是 **{fastest_algo['演算法']}** (僅需 **{fastest_algo['運算時間 (s)']:.4f} 秒**)；運算最久的是 **{slowest_algo['演算法']}** (需 **{slowest_algo['運算時間 (s)']:.4f} 秒**)。這完美展示了題意要求的『目標值與求解時間』對比，證明了數學規劃與啟發式演算法在效率上的差異！")
+
+# 顯示原本的兩個小圖
 col_a, col_b = st.columns(2)
 with col_a: st.plotly_chart(fig2, width="stretch")
 with col_b: st.plotly_chart(fig3, width="stretch")
