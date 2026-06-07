@@ -42,7 +42,6 @@ for i in range(1, n):
             prob += u[i] - u[j] + Q * x[i, j] <= Q - 1
 
 # 6. 求解模型
-print("開始求解數學模式 (MILP)...")
 prob.solve(pulp.PULP_CBC_CMD(msg=False))
 
 # 求解耗時
@@ -50,7 +49,6 @@ solve_time = time.time() - start_time
 best_distance = pulp.value(prob.objective)
 
 # 7. 輸出結果
-print("-" * 30)
 print(f"最佳總距離: {best_distance:.2f} 公里")
 print(f"總耗時: {solve_time:.4f} 秒")
 
@@ -81,7 +79,6 @@ for idx in routes[1]:
 print("回到起點")
 
 
-# MILP 雖然是一次算出最佳解，但可以把最佳解拆成一步步的軌跡供網頁播放
 history_log = []
 current_r1 = [0]
 current_r2 = [0]
@@ -131,12 +128,12 @@ for r_idx, route in enumerate(routes):
             print(f"[{current_time.strftime('%H:%M')}] 從 {temples[curr_node]} 出發")
         else:
             leave_time = current_time + stay_time
-            print(f"  -> 停留 30 分鐘，預計 [{leave_time.strftime('%H:%M')}] 離開")
+            print(f"  預計 [{leave_time.strftime('%H:%M')}] 離開")
             current_time = leave_time
         dist_km = dist[curr_node][next_node]
         travel_mins = dist_km / speed_km_per_min
         current_time += datetime.timedelta(minutes=travel_mins)
-        print(f"  駛往 {temples[next_node]} ｜ 行車 {dist_km:.2f} 公里 (約 {int(travel_mins)} 分鐘)")
+        print(f"  駛往 {temples[next_node]}  約 {dist_km:.2f} 公里 ({int(travel_mins)} 分鐘)")
         if i + 1 == len(route) - 1:
             print(f"[{current_time.strftime('%H:%M')}] 回到 {temples[next_node]} (行程結束)")
         else:
