@@ -2,9 +2,13 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import pandas as pd
 import time
+import json
+import os
 
 # 1. 讀取距離矩陣
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
+df_dist = df_dist.loc[df_dist.columns, :]
+
 temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
@@ -92,9 +96,6 @@ print(f"(此車行駛距離: {distances[1]:.2f} 公里 | 負責 {len(routes[1])-
 
 
 # 將運算結果儲存至 JSON
-import json
-import os
-
 # 1. 定義演算法的名稱
 algo_name = "Greedy" 
 
@@ -123,6 +124,7 @@ else:
     all_results = {}
 
 # 4. 將這支演算法更新進去，並覆蓋存檔
+# 註：Greedy 每次跑結果都一樣，所以不需要判斷 best_dist，直接覆蓋更新即可
 all_results.update(algo_result)
 
 with open(json_file, "w", encoding="utf-8") as f:
