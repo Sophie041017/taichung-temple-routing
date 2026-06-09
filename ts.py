@@ -4,10 +4,16 @@ import pandas as pd
 import random
 import numpy as np
 import time
+import json
+import os
 
+
+random.seed(42)
+np.random.seed(42)
 
 # 1. 讀取距離矩陣
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
+df_dist = df_dist.loc[df_dist.columns, :]
 temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
@@ -106,7 +112,6 @@ for iteration in range(MAX_ITER):
             best_cost = current_cost
             best_state = current_state[:]
             
-
             _, _, _, h_r1, h_r2 = calc_total_dist(best_state)
             history_log.append({
                 "iteration": iteration + 1,
@@ -136,11 +141,7 @@ print("回到起點")
 print(f"(行駛距離: {best_dist_2:.2f} 公里 | 負責 {len(best_route_2)-2} 間宮廟)")
 
 
-
-#將運算結果儲存至 JSON
-import json
-import os
-
+# 將運算結果儲存至 JSON
 algo_name = "TS"
 json_file = "results.json"
 
@@ -159,9 +160,8 @@ old_best_dist = float('inf')
 if algo_name in all_results and "distance" in all_results[algo_name]:
     old_best_dist = all_results[algo_name]["distance"]
 
-# 3. 檢查
-if best_cost < old_best_dist:
-    print(f"[{algo_name}] 發現更佳路線，從 {old_best_dist:.2f} km 變為 {best_cost:.2f} km")
+if best_cost <= old_best_dist:
+    print(f"\n[{algo_name}] 最佳里程紀錄為 {best_cost:.2f} km")
     
     # 準備要寫入的新資料
     all_results[algo_name] = {
