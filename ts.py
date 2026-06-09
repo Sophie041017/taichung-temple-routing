@@ -157,7 +157,7 @@ old_best_dist = float('inf')
 if algo_name in all_results and "distance" in all_results[algo_name]:
     old_best_dist = all_results[algo_name]["distance"]
 
-if best_cost <= old_best_dist:
+if best_cost < old_best_dist:
     print(f"\n[{algo_name}] 最佳里程紀錄為 {best_cost:.2f} km")
     
     # 準備要寫入的新資料
