@@ -3,10 +3,14 @@ sys.stdout.reconfigure(encoding='utf-8')
 import pandas as pd
 import random
 import time
+import json
+import os
 
+random.seed(42)
 
 # 1. 讀取距離矩陣
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
+df_dist = df_dist.loc[df_dist.columns, :]
 temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
@@ -112,7 +116,6 @@ eval_population = [memetic_education(ind) for ind in population]
 best_overall_info = None
 best_dist = float('inf')
 
-
 history_log = []
 
 for gen in range(GENERATIONS):
@@ -128,7 +131,6 @@ for gen in range(GENERATIONS):
         child = mutate(child)
         new_population.append(child)
         
-
     eval_population = [memetic_education(ind) for ind in new_population]
     
     current_best_info, current_best_ind = min(eval_population, key=lambda x: x[0][0])
@@ -138,7 +140,6 @@ for gen in range(GENERATIONS):
         best_dist = current_best_info[0]
         best_overall_info = current_best_info
         
-
         _, _, _, h_route1, h_route2 = best_overall_info
         history_log.append({
             "iteration": gen + 1,  
@@ -169,15 +170,10 @@ print("回到起點")
 print(f"(行駛距離: {best_dist_2:.2f} 公里 | 負責 {len(best_route_2)-2} 間宮廟)")
 
 
-
 # 將運算結果儲存至 JSON
-import json
-import os
-
 algo_name = "MA"
 json_file = "results.json"
 
-# 1. 先讀取目前的歷史紀錄
 if os.path.exists(json_file):
     with open(json_file, "r", encoding="utf-8") as f:
         try:
@@ -187,16 +183,13 @@ if os.path.exists(json_file):
 else:
     all_results = {}
 
-# 2. 找出舊的歷史最佳距離
 old_best_dist = float('inf')
 if algo_name in all_results and "distance" in all_results[algo_name]:
     old_best_dist = all_results[algo_name]["distance"]
 
-# 3. 檢查
-if best_dist < old_best_dist:
-    print(f"[{algo_name}] 發現更佳路線，從 {old_best_dist:.2f} km 變為 {best_dist:.2f} km")
+if best_dist <= old_best_dist:
+    print(f"\n[{algo_name}] 最佳里程紀錄為 {best_dist:.2f} km")
     
-    # 準備要寫入的新資料
     all_results[algo_name] = {
         "distance": round(best_dist, 2),
         "time": round(solve_time, 4),
@@ -207,7 +200,6 @@ if best_dist < old_best_dist:
         "history": history_log 
     }
     
-    # 執行存檔覆蓋
     with open(json_file, "w", encoding="utf-8") as f:
         json.dump(all_results, f, ensure_ascii=False, indent=4)
         
