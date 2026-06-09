@@ -228,7 +228,7 @@ old_best_dist = float('inf')
 if algo_name in all_results and "distance" in all_results[algo_name]:
     old_best_dist = all_results[algo_name]["distance"]
 
-if final_total <= old_best_dist:
+if final_total < old_best_dist:
     print(f"\n[{algo_name}] 最佳里程紀錄為 {final_total:.2f} km")
     
     all_results[algo_name] = {
