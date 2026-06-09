@@ -2,9 +2,13 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import pandas as pd
 import time
+import json
+import os
 
 # 1. 讀取距離矩陣
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
+df_dist = df_dist.loc[df_dist.columns, :]
+
 temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
@@ -86,7 +90,6 @@ for s, i, j in savings:
             routes.remove(route_j)
             routes.append(new_route)
             
-
             step_count += 1
             log_history(routes, step_count)
 
@@ -135,7 +138,6 @@ history_log.append({
 })
 
 
-
 # 6. 輸出最終結果
 print(f"總耗時: {solve_time:.6f} 秒")
 print(f"最佳總距離: {opt_total:.2f} 公里")
@@ -153,11 +155,7 @@ print("回到起點")
 print(f"(行駛距離: {opt_dist_2:.2f} 公里 | 負責 {len(opt_route_2)-2} 間宮廟)")
 
 
-
 # 將運算結果儲存至 JSON 
-import json
-import os
-
 algo_name = "Savings" 
 
 algo_result = {
