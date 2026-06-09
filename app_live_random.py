@@ -27,7 +27,7 @@ temples = df_dist.columns.tolist()
 
 def calc_route_dist(route):
     if not route or len(route) < 2: return 0
-    return sum(dist_matrix[route[k]][route[k+1]] for k in range(len(route)-1))
+    return sum(df_dist.loc[temples[route[k]], temples[route[k+1]]] for k in range(len(route)-1))
 
 algos, distances, comp_times, car1_counts, car2_counts = [], [], [], [], []
 fleet_max_times, balance_diffs = [], []
@@ -174,7 +174,9 @@ def generate_schedule(route):
             schedule.append({"站點": "起點", "宮廟名稱": curr_name, "抵達時間": "-", "離開時間": current_time.strftime('%H:%M')})
         else:
             prev_node = route[i-1]
-            dist_km = dist_matrix[prev_node][curr_node]
+            prev_name = temples[prev_node] 
+            dist_km = df_dist.loc[prev_name, curr_name] 
+            
             travel_mins = dist_km / 0.75 # 時速 45km/h = 0.75 km/min
             current_time += datetime.timedelta(minutes=travel_mins)
             arrive_str = current_time.strftime('%H:%M')
@@ -187,6 +189,7 @@ def generate_schedule(route):
                 current_time = leave_time
     return pd.DataFrame(schedule)
 
+
 def draw_route_with_time(route, color, car_name):
     if not route or len(route) < 2: return
 
@@ -197,7 +200,10 @@ def draw_route_with_time(route, color, car_name):
     
     for seq, node_idx in enumerate(route):
         if seq > 0:
-            current_time += datetime.timedelta(minutes=(dist_matrix[route[seq-1]][node_idx] / 0.75))
+            prev_name = temples[route[seq-1]]
+            curr_name = temples[node_idx]
+            dist_km = df_dist.loc[prev_name, curr_name]
+            current_time += datetime.timedelta(minutes=(dist_km / 0.75))
             
         if seq == 0 or seq == len(route) - 1: 
             continue 
