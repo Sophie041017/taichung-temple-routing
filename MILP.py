@@ -130,8 +130,8 @@ for r_idx, route in enumerate(routes):
         else:
             leave_time = current_time + stay_time
             print(f"  預計 [{leave_time.strftime('%H:%M')}] 離開")
-            current_time = leave_time
-        dist_km = dist[curr_node][next_node]
+            current_time = leave_time 
+            dist_km = df_dist.loc[temples[curr_node], temples[next_node]]
         travel_mins = dist_km / speed_km_per_min
         current_time += datetime.timedelta(minutes=travel_mins)
         print(f"  駛往 {temples[next_node]}  約 {dist_km:.2f} 公里 ({int(travel_mins)} 分鐘)")
