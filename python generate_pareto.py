@@ -6,7 +6,6 @@ import math
 import json
 import time
 
-random.seed(42)
 
 # 1. 讀取距離矩陣
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
