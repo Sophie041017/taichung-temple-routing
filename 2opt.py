@@ -5,7 +5,7 @@ import time
 
 
 # 1. 讀取距離矩陣
-df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
+df_dist = df_dist.loc[df_dist.columns, :]
 temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
