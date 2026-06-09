@@ -146,19 +146,20 @@ r1 = algo_data.get("route1", [])
 r2 = algo_data.get("route2", [])
 
 temple_coords = {
-    0: ("南屯萬和宮", 24.138, 120.638), 1: ("西屯福壽宮", 24.170, 120.645),
-    2: ("北區明德宮天聖堂", 24.161, 120.675), 3: ("北屯紫微宮", 24.175, 120.685),
-    4: ("潭子潭水亭觀音廟", 24.212, 120.705), 5: ("社口萬興宮", 24.240, 120.670),
-    6: ("豐原慈濟宮", 24.252, 120.718), 7: ("東勢東聖宮", 24.258, 120.827),
-    8: ("大甲鎮瀾宮", 24.344, 120.623), 9: ("清水紫雲巖", 24.269, 120.578),
-    10: ("梧棲浩天宮", 24.240, 120.536), 11: ("沙鹿玉皇殿", 24.238, 120.560),
-    12: ("龍井新庄永順宮", 24.195, 120.540), 13: ("大肚瑞安宮", 24.155, 120.545),
-    14: ("南區醒修宮", 24.125, 120.670), 15: ("大里杙福興宮", 24.098, 120.678),
-    16: ("太平聖和宮", 24.125, 120.715), 17: ("中區順天宮輔順將軍廟", 24.145, 120.682)
+    "南屯萬和宮": (24.138, 120.638), "西屯福壽宮": (24.170, 120.645),
+    "北區明德宮天聖堂": (24.161, 120.675), "北屯紫微宮": (24.175, 120.685),
+    "潭子潭水亭觀音廟": (24.212, 120.705), "社口萬興宮": (24.240, 120.670),
+    "豐原慈濟宮": (24.252, 120.718), "東勢東聖宮": (24.258, 120.827),
+    "大甲鎮瀾宮": (24.344, 120.623), "清水紫雲巖": (24.269, 120.578),
+    "梧棲浩天宮": (24.240, 120.536), "沙鹿玉皇殿": (24.238, 120.560),
+    "龍井新庄永順宮": (24.195, 120.540), "大肚瑞安宮": (24.155, 120.545),
+    "南區醒修宮": (24.125, 120.670), "大里杙福興宮": (24.098, 120.678),
+    "太平聖和宮": (24.125, 120.715), "中區順天宮輔順將軍廟": (24.145, 120.682)
 }
 
 m = folium.Map(location=[24.22, 120.65], zoom_start=11, tiles="OpenStreetMap")
-folium.Marker([temple_coords[0][1], temple_coords[0][2]], tooltip="總部：南屯萬和宮", icon=folium.Icon(color="red", icon="home")).add_to(m)
+depot_name = temples[0]
+folium.Marker([temple_coords[depot_name][0], temple_coords[depot_name][1]], tooltip=f"總部：{depot_name}", icon=folium.Icon(color="red", icon="home")).add_to(m)
 
 def generate_schedule(route):
     if not route or len(route) < 2: return None
@@ -167,8 +168,10 @@ def generate_schedule(route):
     
     for i in range(len(route)):
         curr_node = route[i]
+        curr_name = temples[curr_node]
+        
         if i == 0:
-            schedule.append({"站點": "起點", "宮廟名稱": temple_coords[curr_node][0], "抵達時間": "-", "離開時間": current_time.strftime('%H:%M')})
+            schedule.append({"站點": "起點", "宮廟名稱": curr_name, "抵達時間": "-", "離開時間": current_time.strftime('%H:%M')})
         else:
             prev_node = route[i-1]
             dist_km = dist_matrix[prev_node][curr_node]
@@ -177,16 +180,17 @@ def generate_schedule(route):
             arrive_str = current_time.strftime('%H:%M')
             
             if i == len(route) - 1:
-                schedule.append({"站點": "終點", "宮廟名稱": temple_coords[curr_node][0], "抵達時間": arrive_str, "離開時間": "-"})
+                schedule.append({"站點": "終點", "宮廟名稱": curr_name, "抵達時間": arrive_str, "離開時間": "-"})
             else:
                 leave_time = current_time + datetime.timedelta(minutes=30)
-                schedule.append({"站點": f"第 {i} 站", "宮廟名稱": temple_coords[curr_node][0], "抵達時間": arrive_str, "離開時間": leave_time.strftime('%H:%M')})
+                schedule.append({"站點": f"第 {i} 站", "宮廟名稱": curr_name, "抵達時間": arrive_str, "離開時間": leave_time.strftime('%H:%M')})
                 current_time = leave_time
     return pd.DataFrame(schedule)
 
 def draw_route_with_time(route, color, car_name):
     if not route or len(route) < 2: return
-    points = [[temple_coords[i][1], temple_coords[i][2]] for i in route]
+
+    points = [[temple_coords[temples[i]][0], temple_coords[temples[i]][1]] for i in route]
     folium.PolyLine(points, color=color, weight=5, opacity=0.8).add_to(m)
     
     current_time = datetime.datetime(2026, 1, 1, 9, 0, 0)
@@ -201,7 +205,9 @@ def draw_route_with_time(route, color, car_name):
         arrive_str = current_time.strftime('%H:%M')
         current_time += datetime.timedelta(minutes=30)
         
-        lat, lon = temple_coords[node_idx][1], temple_coords[node_idx][2]
+        curr_name = temples[node_idx] 
+        lat, lon = temple_coords[curr_name][0], temple_coords[curr_name][1]
+        
         icon_html = f'''
         <div style="background-color: {color}; color: white; border-radius: 50%;
                     width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
@@ -211,7 +217,7 @@ def draw_route_with_time(route, color, car_name):
         '''
         folium.Marker(
             [lat, lon],
-            tooltip=f"{car_name} - 第 {seq} 站：{temple_coords[node_idx][0]} (抵達: {arrive_str})",
+            tooltip=f"{car_name} - 第 {seq} 站：{curr_name} (抵達: {arrive_str})",
             icon=folium.DivIcon(html=icon_html, icon_size=(22, 22), icon_anchor=(11, 11))
         ).add_to(m)
 
