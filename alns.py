@@ -6,15 +6,18 @@ import numpy as np
 import math
 import time
 
+random.seed(42)
+np.random.seed(42)
 
 # 1. 讀取距離矩陣
 df_dist = pd.read_csv('google_distance_matrix.csv', index_col=0)
+
+df_dist = df_dist.loc[df_dist.columns, :]
 temples = df_dist.columns.tolist()
 dist = df_dist.values
 n = len(temples)
 
 start_time = time.time()
-
 
 MAX_CAPACITY = 16
 
@@ -23,7 +26,6 @@ def calc_dist(route):
 
 def evaluate(routes):
     return calc_dist([0]+routes[0]+[0]) + calc_dist([0]+routes[1]+[0])
-
 
 # 2. 定義 Destroy Operators
 def destroy_random(routes, q):
@@ -52,7 +54,6 @@ def destroy_worst(routes, q):
     for _, r_idx, node, idx in sorted(to_remove, key=lambda x: x[3], reverse=True):
         removed.append(new_routes[r_idx].pop(idx))
     return new_routes, removed
-
 
 # 3. 定義 Repair Operator
 def repair_greedy(routes, removed):
@@ -190,7 +191,6 @@ history_log.append({
     "route2": final_route_2[:]
 })
 
-
 # 6. 輸出最終結果
 print(f"總耗時: {solve_time:.6f} 秒")
 print(f"最佳總距離: {final_total:.2f} 公里")
@@ -217,7 +217,6 @@ import os
 algo_name = "ALNS"
 json_file = "results.json"
 
-# 1. 先讀取目前的歷史紀錄
 if os.path.exists(json_file):
     with open(json_file, "r", encoding="utf-8") as f:
         try:
@@ -227,16 +226,13 @@ if os.path.exists(json_file):
 else:
     all_results = {}
 
-# 2. 找出舊的歷史最佳距離
 old_best_dist = float('inf')
 if algo_name in all_results and "distance" in all_results[algo_name]:
     old_best_dist = all_results[algo_name]["distance"]
 
-# 3.
-if final_total < old_best_dist:
-    print(f"[{algo_name}] 發現更佳路線，從 {old_best_dist:.2f} km 變為 {final_total:.2f} km")
+if final_total <= old_best_dist:
+    print(f"\n[{algo_name}] 最佳里程紀錄為 {final_total:.2f} km")
     
-    # 準備要寫入的新資料
     all_results[algo_name] = {
         "distance": round(final_total, 2),
         "time": round(solve_time, 4),
@@ -247,7 +243,6 @@ if final_total < old_best_dist:
         "history": history_log 
     }
     
-    # 執行存檔覆蓋
     with open(json_file, "w", encoding="utf-8") as f:
         json.dump(all_results, f, ensure_ascii=False, indent=4)
         
